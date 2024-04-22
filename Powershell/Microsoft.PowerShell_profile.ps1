@@ -18,6 +18,15 @@ function killdir() {
     } 
 }
 
+function goto() {
+    if ($args.Length -eq 0) {
+        Write-Host "No arguments provided."
+    } else {
+        Set-Location -Path $args[0]
+        dirasttitle
+    }
+}
+
 function dirasttitle() {
     $dir = Get-Location
     $lastDir = $dir | Split-Path -Leaf
@@ -49,6 +58,7 @@ function aha-help() {
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirasttitle: Set the title of the terminal to the current directory"
     Write-Host "  gitclonecd: Clone a git repository and change to it"
+    Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
 
     Write-Host "Aliases:"
     Write-Host "  c: clear terminal"
