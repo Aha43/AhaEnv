@@ -1,4 +1,7 @@
 
+
+Add-Type -AssemblyName System.Windows.Forms
+
 # Dir functions
 
 function mkdircd() {
@@ -44,6 +47,17 @@ function gitclonecd() {
     }
 }
 
+function dllfullname() {
+    # open file dialog
+    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    # set the filter
+    $openFileDialog.Filter = "DLL Files (*.dll)|*.dll"
+    # show the dialog
+    $openFileDialog.ShowDialog() | Out-Null
+    $path = $openFileDialog.FileName
+    ([system.reflection.assembly]::loadfile($path)).FullName
+}
+
 # Aha functions
 
 function aha-help() {
@@ -59,6 +73,9 @@ function aha-help() {
     Write-Host "  dirasttitle: Set the title of the terminal to the current directory"
     Write-Host "  gitclonecd: Clone a git repository and change to it"
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
+
+    Write-Host "dll functions:"
+    Write-Host "  dllfullname: Get the full name of a DLL file"
 
     Write-Host "Aliases:"
     Write-Host "  c: clear terminal"
