@@ -66,6 +66,7 @@ function aha-help() {
     Write-Host "  aha-profilepath: Display the profile path"
     Write-Host "  aha-profilepaths: Display the profile paths"
     Write-Host "  aha-ttitle: Set the title of the terminal"
+    Write-Host "  aha-publishprofile: Copy the profile to the current profile"
 
     Write-Host "dir functions:"
     Write-Host "  mkdircd: Create a directory and change to it"
@@ -79,6 +80,16 @@ function aha-help() {
 
     Write-Host "Aliases:"
     Write-Host "  c: clear terminal"
+}
+
+function aha-publishprofile() {
+    $SourcePath = Join-Path -Path "." -ChildPath "Microsoft.PowerShell_profile.ps1"
+    if (-not (Test-Path $SourcePath)) {
+        Write-Host "File not found: $SourcePath"
+        return
+    }
+    Copy-Item -Path $SourcePath -Destination $PROFILE -Force
+    
 }
 
 function aha-profilepath()  {
