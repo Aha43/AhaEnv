@@ -4,6 +4,16 @@ Add-Type -AssemblyName System.Windows.Forms
 
 # Dir functions
 
+function cleanso() {
+    if (-not (Test-Path "*.sln")) {
+        Write-Host "No solution file found in the current directory."
+        return
+    }
+
+    Get-ChildItem -Recurse -Filter "obj" | Remove-Item -Recurse -Force
+    Get-ChildItem -Recurse -Filter "bin" | Remove-Item -Recurse -Force
+}
+
 function mkdircd() {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
@@ -69,6 +79,7 @@ function aha-help() {
     Write-Host "  aha-publishprofile: Copy the profile to the current profile"
 
     Write-Host "dir functions:"
+    Write-Host "  cleanso: Clean the solution directory"
     Write-Host "  mkdircd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirasttitle: Set the title of the terminal to the current directory"
