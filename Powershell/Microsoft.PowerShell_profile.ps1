@@ -77,6 +77,7 @@ function aha-help() {
     Write-Host "  aha-profilepaths: Display the profile paths"
     Write-Host "  aha-ttitle: Set the title of the terminal"
     Write-Host "  aha-publishprofile: Copy the profile to the current profile"
+    Write-Host "  aha-gennewpwd: Generate a new password"
 
     Write-Host "dir functions:"
     Write-Host "  cleanso: Clean the solution directory"
@@ -117,6 +118,13 @@ function aha-ttitle() {
     } else {
         $host.UI.RawUI.WindowTitle = $args[0] 
     }
+}
+
+function aha-gennewpwd() {
+    $length = 16
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+    $password = -join ((0..$length) | ForEach-Object { $chars[(Get-Random -Minimum 0 -Maximum $chars.Length)] })
+    Write-Host $password
 }
 
 # Aliases
