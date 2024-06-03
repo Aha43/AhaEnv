@@ -92,6 +92,9 @@ function aha-help() {
 
     Write-Host "Aliases:"
     Write-Host "  c: clear terminal"
+
+    Write-Host "Tips:"
+    Write-Host "  explorer . : Open the current directory in the file explorer"
 }
 
 function aha-publishprofile() {
