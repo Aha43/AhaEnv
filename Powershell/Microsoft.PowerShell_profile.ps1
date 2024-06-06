@@ -134,3 +134,18 @@ function aha-gennewpwd() {
 
 # Aliases
 Set-Alias -Name c -Value clear
+
+
+# write random line from a list of text lines
+function randomline() {
+    $lines = @(Get-Content $args[0])
+    $lines | Get-Random
+}
+
+# if quotes file exists in user home directory, write a random quote
+$quotesFile = "$env:USERPROFILE\quotes.txt"
+if (Test-Path $quotesFile) {
+    Write-Host
+    randomline $quotesFile
+    Write-Host
+}
