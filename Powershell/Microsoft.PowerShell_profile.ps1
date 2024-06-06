@@ -1,4 +1,6 @@
 
+# add the bin directory in user home to path
+$env:Path += ";$env:USERPROFILE\bin"
 
 Add-Type -AssemblyName System.Windows.Forms
 
