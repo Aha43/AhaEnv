@@ -136,6 +136,7 @@ function aha-gennewpwd() {
 function aha-quotes() {
     $quotesFile = "$env:USERPROFILE\quotes.txt"
     if (Test-Path $quotesFile) {
+        Write-Host
         $lines = @(Get-Content $quotesFile)
         $lines | Get-Random
         Write-Host
@@ -146,4 +147,5 @@ function aha-quotes() {
 Set-Alias -Name c -Value clear
 
 # Write something upon terminal session start
+c
 aha-quotes
