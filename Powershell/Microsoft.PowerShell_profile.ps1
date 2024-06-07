@@ -80,6 +80,7 @@ function aha-help() {
     Write-Host "  aha-ttitle: Set the title of the terminal"
     Write-Host "  aha-publishprofile: Copy the profile to the current profile"
     Write-Host "  aha-gennewpwd: Generate a new password"
+    Write-Host "  aha-quotes: Display a random quote"
 
     Write-Host "dir functions:"
     Write-Host "  cleanso: Clean the solution directory"
@@ -132,20 +133,17 @@ function aha-gennewpwd() {
     Write-Host $password
 }
 
+function aha-quotes() {
+    $quotesFile = "$env:USERPROFILE\quotes.txt"
+    if (Test-Path $quotesFile) {
+        $lines = @(Get-Content $quotesFile)
+        $lines | Get-Random
+        Write-Host
+    }
+}
+
 # Aliases
 Set-Alias -Name c -Value clear
 
-
-# write random line from a list of text lines
-function randomline() {
-    $lines = @(Get-Content $args[0])
-    $lines | Get-Random
-}
-
-# if quotes file exists in user home directory, write a random quote
-$quotesFile = "$env:USERPROFILE\quotes.txt"
-if (Test-Path $quotesFile) {
-    Write-Host
-    randomline $quotesFile
-    Write-Host
-}
+# Write something upon terminal session start
+aha-quotes
