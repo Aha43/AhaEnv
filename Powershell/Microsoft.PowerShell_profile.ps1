@@ -163,6 +163,7 @@ function c {
 }
 
 $env:short_prompt = "false"
+$env:short_bprompt = "false"
 
 function dirforprompt() {
     if ($env:short_prompt -eq "true") {
@@ -182,12 +183,31 @@ function long {
     $env:short_prompt = "false"
 }
 
-# Prompt to display current git branch and color red if files not added, yellow if files added but not committed and green if committed
+function bshort {
+    $env:short_bprompt = "true"
+}
+function blong {
+    $env:short_bprompt = "false"
+}
+
+function get-branch-name {
+    $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    if ($branch) {
+        if ($env:short_bprompt -eq "true") {
+            if ($branch.Length -gt 10) {
+                $shortBranch = $branch.Substring(0, 10)
+                return ($shortBranch + "...") 
+            }
+        }
+        return $branch
+    }
+    return ""
+}
 
 function prompt {
     $Time = Get-Date -Format "HH:mm:ss"
     Write-Host "[$Time]" -NoNewline -ForegroundColor Cyan
-    $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    $branch = get-branch-name
     if ($branch) {
         $status = git status --porcelain 
         if ([string]::IsNullOrWhiteSpace($status)) {
