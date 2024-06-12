@@ -82,6 +82,7 @@ function aha-help() {
     Write-Host "  aha-gennewpwd: Generate a new password"
     Write-Host "  aha-quotes: Display a random quote"
     Write-Host "  aha-v: Display the PowerShell version"
+    Write-Host "  aha-hello: Display the welcome message"
 
     Write-Host "Directory and file functions:"
     Write-Host "  cleanso: Clean the solution directory"
@@ -91,9 +92,7 @@ function aha-help() {
     Write-Host "  gitclonecd: Clone a git repository and change to it"
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
-
-    Write-Host "Aliases:"
-    Write-Host "  c: clear terminal"
+    Write-Host "  c: Clear the terminal"
 
     Write-Host "Tips:"
     Write-Host "  explorer . : Open the current directory in the file explorer"
@@ -147,16 +146,25 @@ function aha-v {
     $PSVersionTable
 }
 
-# Aliases
-Set-Alias -Name c -Value clear
-
 # Write something upon terminal session start
-c
-aha-quotes
+function aha-hello {
+    Clear-Host
+    aha-quotes
+    $Time = Get-Date -Format "dd.MM.yy"
+    Write-Host "[$Time]" -ForegroundColor Cyan
+}
+
+function c {
+    Clear-Host
+    $Time = Get-Date -Format "dd.MM.yy"
+    Write-Host "[$Time]" -ForegroundColor Cyan
+}
 
 # Prompt to display current git branch and color red if files not added, yellow if files added but not committed and green if committed
 
 function prompt {
+    $Time = Get-Date -Format "HH:mm:ss"
+    Write-Host "[$Time]" -NoNewline -ForegroundColor Cyan
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
     if ($branch) {
         $status = git status --porcelain 
@@ -169,3 +177,5 @@ function prompt {
     Write-Host "$PWD>" -NoNewline
     return " "
 }
+
+aha-hello
