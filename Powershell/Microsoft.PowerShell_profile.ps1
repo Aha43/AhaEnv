@@ -81,16 +81,15 @@ function aha-help() {
     Write-Host "  aha-publishprofile: Copy the profile to the current profile"
     Write-Host "  aha-gennewpwd: Generate a new password"
     Write-Host "  aha-quotes: Display a random quote"
+    Write-Host "  aha-v: Display the PowerShell version"
 
-    Write-Host "dir functions:"
+    Write-Host "Directory and file functions:"
     Write-Host "  cleanso: Clean the solution directory"
     Write-Host "  mkdircd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirasttitle: Set the title of the terminal to the current directory"
     Write-Host "  gitclonecd: Clone a git repository and change to it"
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
-
-    Write-Host "dll functions:"
     Write-Host "  dllfullname: Get the full name of a DLL file"
 
     Write-Host "Aliases:"
@@ -143,9 +142,30 @@ function aha-quotes() {
     }
 }
 
+function aha-v {
+    # Display the PowerShell version
+    $PSVersionTable
+}
+
 # Aliases
 Set-Alias -Name c -Value clear
 
 # Write something upon terminal session start
 c
 aha-quotes
+
+# Prompt to display current git branch and color red if files not added, yellow if files added but not committed and green if committed
+
+function prompt {
+    $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    if ($branch) {
+        $status = git status --porcelain 
+        if ([string]::IsNullOrWhiteSpace($status)) {
+            Write-Host "{$branch} " -NoNewline -ForegroundColor Green
+        } else {
+            Write-Host "{$branch} " -NoNewline -ForegroundColor Red
+        }
+    }
+    Write-Host "$PWD>" -NoNewline
+    return " "
+}
