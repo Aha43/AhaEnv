@@ -164,7 +164,7 @@ function prompt {
             Write-Host "{$branch} " -NoNewline -ForegroundColor Green
         } else {
             Write-Host "{$branch} " -NoNewline -ForegroundColor Red
-        }
+        } 
     }
     Write-Host "$PWD>" -NoNewline
     return " "
