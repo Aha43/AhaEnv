@@ -93,6 +93,8 @@ function aha-help() {
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  c: Clear the terminal"
+    Write-Host "  short: Display the short prompt"
+    Write-Host "  long: Display the long prompt"
 
     Write-Host "Tips:"
     Write-Host "  explorer . : Open the current directory in the file explorer"
@@ -160,6 +162,26 @@ function c {
     Write-Host "[$Time]" -ForegroundColor Cyan
 }
 
+$env:short_prompt = "false"
+
+function dirforprompt() {
+    if ($env:short_prompt -eq "true") {
+        $dir = Get-Location
+        $lastDir = $dir | Split-Path -Leaf
+        return $lastDir
+    }
+    else {
+        return $PWD
+    }
+}
+
+function short {
+    $env:short_prompt = "true"
+}
+function long {
+    $env:short_prompt = "false"
+}
+
 # Prompt to display current git branch and color red if files not added, yellow if files added but not committed and green if committed
 
 function prompt {
@@ -169,12 +191,14 @@ function prompt {
     if ($branch) {
         $status = git status --porcelain 
         if ([string]::IsNullOrWhiteSpace($status)) {
-            Write-Host "{$branch} " -NoNewline -ForegroundColor Green
+            Write-Host "{$branch}" -NoNewline -ForegroundColor Green
         } else {
-            Write-Host "{$branch} " -NoNewline -ForegroundColor Red
+            Write-Host "{$branch}" -NoNewline -ForegroundColor Red
         } 
     }
-    Write-Host "$PWD>" -NoNewline
+    [string]$p = dirforprompt
+    Write-Host " " -NoNewline
+    Write-Host "$p>" -NoNewline
     return " "
 }
 
