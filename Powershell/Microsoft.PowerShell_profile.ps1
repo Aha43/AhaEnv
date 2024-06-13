@@ -157,16 +157,6 @@ function aha-hello {
     promptheader
 }
 
-# boolean function to tell if need push to remote
-function needpush() {
-    $status = git status --porcelain 
-    if ([string]::IsNullOrWhiteSpace($status)) {
-        return $false
-    } else {
-        return $true
-    }
-}
-
 function promptheader() {
     $Date = Get-Date -Format "dd.MM.yy"
     $Wday = (Get-Date).DayOfWeek
