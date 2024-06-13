@@ -85,7 +85,7 @@ function aha-help() {
     Write-Host "  aha-hello: Display the welcome message"
 
     Write-Host "Directory and file functions:"
-    Write-Host "  cleanso: Clean the solution directory"
+    Write-Host "  cleanso: Clean the dotnet solution"
     Write-Host "  mkdircd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirasttitle: Set the title of the terminal to the current directory"
@@ -93,8 +93,10 @@ function aha-help() {
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  c: Clear the terminal"
-    Write-Host "  short: Display the short prompt"
-    Write-Host "  long: Display the long prompt"
+    Write-Host "  short: Display the short directory prompt"
+    Write-Host "  long: Display the long directory prompt"
+    Write-Host "  bshort: Display the short branch prompt"
+    Write-Host "  blong: Display the long branch prompt"
 
     Write-Host "Tips:"
     Write-Host "  explorer . : Open the current directory in the file explorer"
@@ -152,14 +154,17 @@ function aha-v {
 function aha-hello {
     Clear-Host
     aha-quotes
-    $Time = Get-Date -Format "dd.MM.yy"
-    Write-Host "[$Time]" -ForegroundColor Cyan
+    promptheader
+}
+
+function promptheader() {
+    $Date = Get-Date -Format "dd.MM.yy"
+    Write-Host "[$Date] ($env:USERNAME)" -NoNewline -ForegroundColor Cyan
 }
 
 function c {
     Clear-Host
-    $Time = Get-Date -Format "dd.MM.yy"
-    Write-Host "[$Time]" -ForegroundColor Cyan
+    promptheader
 }
 
 $env:short_prompt = "false"
