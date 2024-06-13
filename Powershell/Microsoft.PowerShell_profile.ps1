@@ -159,8 +159,9 @@ function aha-hello {
 
 function promptheader() {
     $Date = Get-Date -Format "dd.MM.yy"
+    $Wday = (Get-Date).DayOfWeek
     $User = whoami
-    Write-Host "[$Date] ($User)" -NoNewline -ForegroundColor Cyan
+    Write-Host "[$Date][$Wday] ($User)" -NoNewline -ForegroundColor Cyan
 }
 
 function c {
