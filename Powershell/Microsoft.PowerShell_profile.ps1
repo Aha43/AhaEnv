@@ -159,7 +159,8 @@ function aha-hello {
 
 function promptheader() {
     $Date = Get-Date -Format "dd.MM.yy"
-    Write-Host "[$Date] ($env:USERNAME)" -NoNewline -ForegroundColor Cyan
+    $User = whoami
+    Write-Host "[$Date] ($User)" -NoNewline -ForegroundColor Cyan
 }
 
 function c {
