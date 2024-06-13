@@ -38,11 +38,11 @@ function goto() {
         Write-Host "No arguments provided."
     } else {
         Set-Location -Path $args[0]
-        dirasttitle
+        dirastitle
     }
 }
 
-function dirasttitle() {
+function dirastitle() {
     $dir = Get-Location
     $lastDir = $dir | Split-Path -Leaf
     $host.UI.RawUI.WindowTitle = $lastDir
@@ -55,7 +55,7 @@ function gitclonecd() {
         git clone $args[0]
         $dir = $args[0].Split("/")[-1].Split(".")[0]
         Set-Location -Path $dir
-        dirasttitle
+        dirastitle
     }
 }
 
@@ -77,18 +77,18 @@ function aha-help() {
     Write-Host "  aha-help: Display this help message"
     Write-Host "  aha-profilepath: Display the profile path"
     Write-Host "  aha-profilepaths: Display the profile paths"
-    Write-Host "  aha-ttitle: Set the title of the terminal"
+    Write-Host "  aha-title: Set the title of the terminal"
     Write-Host "  aha-publishprofile: Copy the profile to the current profile"
     Write-Host "  aha-gennewpwd: Generate a new password"
     Write-Host "  aha-quotes: Display a random quote"
     Write-Host "  aha-v: Display the PowerShell version"
     Write-Host "  aha-hello: Display the welcome message"
-
+    Write-Host
     Write-Host "Directory and file functions:"
     Write-Host "  cleanso: Clean the dotnet solution"
     Write-Host "  mkdircd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
-    Write-Host "  dirasttitle: Set the title of the terminal to the current directory"
+    Write-Host "  dirastitle: Set the title of the terminal to the current directory"
     Write-Host "  gitclonecd: Clone a git repository and change to it"
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
@@ -97,9 +97,9 @@ function aha-help() {
     Write-Host "  long: Display the long directory prompt"
     Write-Host "  bshort: Display the short branch prompt"
     Write-Host "  blong: Display the long branch prompt"
-
+    Write-Host
     Write-Host "Tips:"
-    Write-Host "  explorer . : Open the current directory in the file explorer"
+    Write-Host "  explorer . : If on windows open the current directory in the file explorer"
 }
 
 function aha-publishprofile() {
@@ -120,7 +120,7 @@ function aha-profilepaths() {
     $PROFILE | Get-Member -Type NoteProperty | Format-List
 }
 
-function aha-ttitle() {
+function aha-title() {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
@@ -155,6 +155,16 @@ function aha-hello {
     Clear-Host
     aha-quotes
     promptheader
+}
+
+# boolean function to tell if need push to remote
+function needpush() {
+    $status = git status --porcelain 
+    if ([string]::IsNullOrWhiteSpace($status)) {
+        return $false
+    } else {
+        return $true
+    }
 }
 
 function promptheader() {
