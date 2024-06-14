@@ -89,6 +89,7 @@ function aha-help() {
     Write-Host "  aha-quotes: Display a random quote"
     Write-Host "  aha-v: Display the PowerShell version"
     Write-Host "  aha-hello: Display the welcome message"
+    Write-Host "  aha-prompt: Toggle options for the prompt"
     Write-Host
     Write-Host "Directory and file functions:"
     Write-Host "  cleanso: Clean the dotnet solution"
@@ -183,6 +184,38 @@ function c {
 $env:short_prompt = "false"
 $env:short_bprompt = "false"
 
+function aha-prompt {
+    param (
+        [switch]$Default,
+        [switch]$ShortWorkingDirectory,
+        [switch]$LongWorkingDirectory,
+        [switch]$ShortBranch,
+        [switch]$LongBranch
+    ) 
+
+    if ($Default) {
+        $env:short_prompt = "false"
+        $env:short_bprompt = "false"
+    }
+
+    if ($ShortWorkingDirectory) {
+        $env:short_prompt = "true"
+    }
+
+    if ($LongWorkingDirectory) {
+        $env:short_prompt = "false"
+    }
+
+    if ($ShortBranch) {
+        $env:short_bprompt = "true"
+    }
+
+    if ($LongBranch) {
+        $env:short_bprompt = "false"
+    }
+    
+}
+
 function dirforprompt() {
     if ($env:short_prompt -eq "true") {
         $dir = Get-Location
@@ -194,18 +227,36 @@ function dirforprompt() {
     }
 }
 
-function short {
-    $env:short_prompt = "true"
-}
-function long {
-    $env:short_prompt = "false"
-}
+function aha-prompt {
+    param (
+        [switch]$Default,
+        [switch]$ShortWorkingDirectory,
+        [switch]$LongWorkingDirectory,
+        [switch]$ShortBranch,
+        [switch]$LongBranch
+    ) 
 
-function bshort {
-    $env:short_bprompt = "true"
-}
-function blong {
-    $env:short_bprompt = "false"
+    if ($Default) {
+        $env:short_prompt = "false"
+        $env:short_bprompt = "false"
+    }
+
+    if ($ShortWorkingDirectory) {
+        $env:short_prompt = "true"
+    }
+
+    if ($LongWorkingDirectory) {
+        $env:short_prompt = "false"
+    }
+
+    if ($ShortBranch) {
+        $env:short_bprompt = "true"
+    }
+
+    if ($LongBranch) {
+        $env:short_bprompt = "false"
+    }
+    
 }
 
 function get-branch-name {
