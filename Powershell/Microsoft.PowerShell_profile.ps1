@@ -70,6 +70,12 @@ function dllfullname() {
     ([system.reflection.assembly]::loadfile($path)).FullName
 }
 
+function crf([string]$filename) {
+    if (-not (Test-Path $filename)) {
+        New-Item -ItemType File -Path $filename -Force
+    }
+}
+
 # Aha functions
 
 function aha-help() {
@@ -92,6 +98,7 @@ function aha-help() {
     Write-Host "  gitclonecd: Clone a git repository and change to it"
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
+    Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
     Write-Host "  short: Display the short directory prompt"
     Write-Host "  long: Display the long directory prompt"
@@ -149,6 +156,10 @@ function aha-v {
     # Display the PowerShell version
     $PSVersionTable
 }
+
+#
+# Code related to the prompt
+#
 
 # Write something upon terminal session start
 function aha-hello {
@@ -229,4 +240,4 @@ function prompt {
     return " "
 }
 
-aha-hello
+aha-hello # Display the welcome message
