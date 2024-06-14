@@ -162,10 +162,10 @@ function aha-v {
 function aha-hello {
     Clear-Host
     aha-quotes
-    promptheader
+    _promptheader
 }
 
-function promptheader() {
+function _promptheader() {
     $Date = Get-Date -Format "dd.MM.yy"
     $Wday = (Get-Date).DayOfWeek
     $User = whoami
@@ -174,7 +174,7 @@ function promptheader() {
 
 function c {
     Clear-Host
-    promptheader
+    _promptheader
 }
 
 $env:short_prompt = "false"
@@ -255,7 +255,15 @@ function aha-prompt {
     
 }
 
-function get-branch-name {
+function get-ahead {
+    $status = git status -b
+    if ($status -match "ahead") {
+        return "^"
+    }
+    return ""
+}
+
+function _get-branch-name {
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
     if ($branch) {
         if ($env:short_bprompt -eq "true") {
@@ -264,7 +272,8 @@ function get-branch-name {
                 return ($shortBranch + "...") 
             }
         }
-        return $branch
+        $ahead = get-ahead
+        return ($branch + $ahead)
     }
     return ""
 }
@@ -272,7 +281,7 @@ function get-branch-name {
 function prompt {
     $Time = Get-Date -Format "HH:mm:ss"
     Write-Host "[$Time]" -NoNewline -ForegroundColor Cyan
-    $branch = get-branch-name
+    $branch = _get-branch-name
     if ($branch) {
         $status = git status --porcelain 
         if ([string]::IsNullOrWhiteSpace($status)) {
