@@ -101,10 +101,6 @@ function aha-help() {
     Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
-    Write-Host "  short: Display the short directory prompt"
-    Write-Host "  long: Display the long directory prompt"
-    Write-Host "  bshort: Display the short branch prompt"
-    Write-Host "  blong: Display the long branch prompt"
     Write-Host
     Write-Host "Tips:"
     Write-Host "  explorer . : If on windows open the current directory in the file explorer"
