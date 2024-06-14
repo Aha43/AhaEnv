@@ -79,6 +79,7 @@ function crf([string]$filename) {
 # Aha functions
 
 function aha-help() {
+    Write-Host 
     Write-Host "Aha prefix functions:"
     Write-Host "  aha-help: Display this help message"
     Write-Host "  aha-profilepath: Display the profile path"
@@ -102,8 +103,22 @@ function aha-help() {
     Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
     Write-Host
+    Write-Host "Prompt functions:"
+    Write-Host "  short: Set the prompt to display the current directory only"
+    Write-Host "  long: Set the prompt to display the full path of the current directory"
+    Write-Host "  bshort: Set the prompt to display the current branch name only"
+    Write-Host "  blong: Set the prompt to display the full branch name"
+    Write-Host "  time: Display the time in the prompt"
+    Write-Host "  notime: Do not display the time in the prompt"
+    Write-Host "  nobranch: Do not display the branch in the prompt"
+    Write-Host "  branch: Display the branch in the prompt"
+    Write-Host "  default: Set the prompt to display the time and branch"
+    Write-Host
     Write-Host "Tips:"
+    Write-Host "  The prompt can be customized using the prompt functions"
+    Write-Host "  The ^ symbol (after branch name in the prompt) indicates that the branch is ahead of the remote branch"
     Write-Host "  explorer . : If on windows open the current directory in the file explorer"
+    Write-Host 
 }
 
 function aha-publishprofile() {
