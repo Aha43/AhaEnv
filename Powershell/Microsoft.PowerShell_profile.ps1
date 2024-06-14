@@ -169,7 +169,7 @@ function _promptheader() {
     $Date = Get-Date -Format "dd.MM.yy"
     $Wday = (Get-Date).DayOfWeek
     $User = whoami
-    Write-Host "[$Date][$Wday] ($User)" -NoNewline -ForegroundColor Cyan
+    Write-Host "[$Date][$Wday] ($User)" -ForegroundColor Cyan
 }
 
 function c {
@@ -177,40 +177,10 @@ function c {
     _promptheader
 }
 
+$env:prompt_time = "true"
+$env:prompt_branch = "true"
 $env:short_prompt = "false"
 $env:short_bprompt = "false"
-
-function aha-prompt {
-    param (
-        [switch]$Default,
-        [switch]$ShortWorkingDirectory,
-        [switch]$LongWorkingDirectory,
-        [switch]$ShortBranch,
-        [switch]$LongBranch
-    ) 
-
-    if ($Default) {
-        $env:short_prompt = "false"
-        $env:short_bprompt = "false"
-    }
-
-    if ($ShortWorkingDirectory) {
-        $env:short_prompt = "true"
-    }
-
-    if ($LongWorkingDirectory) {
-        $env:short_prompt = "false"
-    }
-
-    if ($ShortBranch) {
-        $env:short_bprompt = "true"
-    }
-
-    if ($LongBranch) {
-        $env:short_bprompt = "false"
-    }
-    
-}
 
 function dirforprompt() {
     if ($env:short_prompt -eq "true") {
@@ -223,36 +193,43 @@ function dirforprompt() {
     }
 }
 
-function aha-prompt {
-    param (
-        [switch]$Default,
-        [switch]$ShortWorkingDirectory,
-        [switch]$LongWorkingDirectory,
-        [switch]$ShortBranch,
-        [switch]$LongBranch
-    ) 
+function short {
+    $env:short_prompt = "true"
+}
 
-    if ($Default) {
-        $env:short_prompt = "false"
-        $env:short_bprompt = "false"
-    }
+function long {
+    $env:short_prompt = "false"
+}
 
-    if ($ShortWorkingDirectory) {
-        $env:short_prompt = "true"
-    }
+function bshort {
+    $env:short_bprompt = "true"
+}
 
-    if ($LongWorkingDirectory) {
-        $env:short_prompt = "false"
-    }
+function blong {
+    $env:short_bprompt = "false"
+}
 
-    if ($ShortBranch) {
-        $env:short_bprompt = "true"
-    }
+function time {
+    $env:prompt_time = "true"
+}
 
-    if ($LongBranch) {
-        $env:short_bprompt = "false"
-    }
-    
+function notime {
+    $env:prompt_time = "false"
+}
+
+function nobranch {
+    $env:prompt_branch = "false"
+}
+
+function branch {
+    $env:prompt_branch = "true"
+}
+
+function default {
+    $env:prompt_time = "true"
+    $env:prompt_branch = "true"
+    $env:short_prompt = "false"
+    $env:short_bprompt = "false"
 }
 
 function get-ahead {
@@ -279,19 +256,31 @@ function _get-branch-name {
 }
 
 function prompt {
-    $Time = Get-Date -Format "HH:mm:ss"
-    Write-Host "[$Time]" -NoNewline -ForegroundColor Cyan
-    $branch = _get-branch-name
-    if ($branch) {
-        $status = git status --porcelain 
-        if ([string]::IsNullOrWhiteSpace($status)) {
-            Write-Host "{$branch}" -NoNewline -ForegroundColor Green
-        } else {
-            Write-Host "{$branch}" -NoNewline -ForegroundColor Red
-        } 
+    [bool]$dospace = $false
+
+    if ($env:prompt_time -eq "true") {
+        $Time = Get-Date -Format "HH:mm:ss"
+        Write-Host "[$Time]" -NoNewline -ForegroundColor Cyan
+        $dospace = $true
     }
+    
+    if ($env:prompt_branch -eq "true") {
+        $dospace = $true
+        $branch = _get-branch-name
+        if ($branch) {
+            $status = git status --porcelain 
+            if ([string]::IsNullOrWhiteSpace($status)) {
+                Write-Host "{$branch}" -NoNewline -ForegroundColor Green
+            } else {
+                Write-Host "{$branch}" -NoNewline -ForegroundColor Red
+            } 
+        }
+    }
+
     [string]$p = dirforprompt
-    Write-Host " " -NoNewline
+    if ($dospace) {
+        $p = " $p"
+    }
     Write-Host "$p>" -NoNewline
     return " "
 }
