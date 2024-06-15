@@ -6,7 +6,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 # Dir functions
 
-function cleanso() {
+function csln() {
     if (-not (Test-Path "*.sln")) {
         Write-Host "No solution file found in the current directory."
         return
@@ -16,7 +16,7 @@ function cleanso() {
     Get-ChildItem -Recurse -Filter "bin" | Remove-Item -Recurse -Force
 }
 
-function mkdircd() {
+function mcd() {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
@@ -48,17 +48,6 @@ function dirastitle() {
     $host.UI.RawUI.WindowTitle = $lastDir
 }
 
-function gitclonecd() {
-    if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
-    } else {
-        git clone $args[0]
-        $dir = $args[0].Split("/")[-1].Split(".")[0]
-        Set-Location -Path $dir
-        dirastitle
-    }
-}
-
 function dllfullname() {
     # open file dialog
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
@@ -74,6 +63,36 @@ function crf([string]$filename) {
     if (-not (Test-Path $filename)) {
         New-Item -ItemType File -Path $filename -Force
     }
+}
+
+# git functions
+
+function clonecd() {
+    if ($args.Length -eq 0) {
+        Write-Host "No arguments provided."
+    } else {
+        git clone $args[0]
+        $dir = $args[0].Split("/")[-1].Split(".")[0]
+        Set-Location -Path $dir
+        dirastitle
+    }
+}
+
+function s {
+    git status
+}
+
+function a {
+    git add .
+}
+
+function co {
+    $cm = "wip"
+    if ($args.Length -eq 1) {
+        $cm = $args[0]
+    }
+    
+    git commit -m $cm
 }
 
 # Aha functions
@@ -93,11 +112,11 @@ function aha-help() {
     Write-Host "  aha-prompt: Toggle options for the prompt"
     Write-Host
     Write-Host "Directory and file functions:"
-    Write-Host "  cleanso: Clean the dotnet solution"
+    Write-Host "  csln: Clean the dotnet solution"
     Write-Host "  mkdircd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirastitle: Set the title of the terminal to the current directory"
-    Write-Host "  gitclonecd: Clone a git repository and change to it"
+    Write-Host "  clonecd: Clone a git repository and change to it"
     Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  crf: Create a file if it does not exist"
