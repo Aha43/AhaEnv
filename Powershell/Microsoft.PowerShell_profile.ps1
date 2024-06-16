@@ -46,6 +46,7 @@ function help {
     Write-Host "  notime: Do not display the time in the prompt"
     Write-Host "  nobranch: Do not display the branch in the prompt"
     Write-Host "  branch: Display the branch in the prompt"
+    Write-Host "  remote: Toggle if to indicate with * branch not remote (it is a bit slugish, default is on)"
     Write-Host "  naken: Only > prompt"
     Write-Host "  default: Set the prompt to display the time and branch"
     Write-Host
@@ -286,11 +287,11 @@ function branch {
     $env:prompt_branch = "true"
 }
 
-function remoteon {
-    $env:prompt_remote = "true"
-}
-
-function remoteoff {
+function remote {
+    if ($env:prompt_remote -eq "false") {
+        $env:prompt_remote = "true"
+        return
+    }
     $env:prompt_remote = "false"
 }
 
