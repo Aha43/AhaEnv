@@ -350,7 +350,7 @@ function _branch {
         if ($env:short_bprompt -eq "true") {
             if ($branch.Length -gt 10) {
                 $shortBranch = $branch.Substring(0, 10)
-                return ($shortBranch + "...") 
+                return ($shortBranch + " ..." + $ahead + $rem) 
             }
         }
         
