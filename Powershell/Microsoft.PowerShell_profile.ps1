@@ -360,3 +360,4 @@ function prompt {
 }
 
 aha-hello # Display the welcome message on session start
+
