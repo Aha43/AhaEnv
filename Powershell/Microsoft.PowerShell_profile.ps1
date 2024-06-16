@@ -17,7 +17,6 @@ function help {
     Write-Host
     Write-Host "Functions of use when developing this profile (run in dir with profile file)"
     Write-Host "  pub: Copy the profile to the current profile"
-    Write-Host "  def: Define profile"
     Write-Host "  propath: Display the profile path"
     Write-Host "  propaths: Display the profile paths"
     Write-Host
@@ -40,11 +39,10 @@ function help {
     Write-Host "  gurl: shows the git remote urls"
     Write-Host
     Write-Host "Prompt functions:"
-    Write-Host "  short: Set the prompt to display the current directory only"
-    Write-Host "  long: Set the prompt to display the full path of the current directory"
+    Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
     Write-Host "  bshort: Set the prompt to display the current branch name only"
     Write-Host "  blong: Set the prompt to display the full branch name"
-    Write-Host "  time: Display the time in the prompt"
+    Write-Host "  time: Toggle if displaying the time in the prompt"
     Write-Host "  notime: Do not display the time in the prompt"
     Write-Host "  nobranch: Do not display the branch in the prompt"
     Write-Host "  branch: Display the branch in the prompt"
@@ -170,10 +168,6 @@ function pub {
     Copy-Item -Path $SourcePath -Destination $PROFILE -Force
 }
 
-function def {
-    . ./Microsoft.PowerShell_profile.ps1
-}
-
 function propath  {
     $PROFILE
 }
@@ -261,10 +255,10 @@ function _dirforprompt {
 }
 
 function short {
-    $env:short_prompt = "true"
-}
-
-function long {
+    if ($env:short_prompt -eq "false") {
+        $env:short_prompt = "true"
+        return
+    }
     $env:short_prompt = "false"
 }
 
@@ -277,10 +271,10 @@ function blong {
 }
 
 function time {
-    $env:prompt_time = "true"
-}
-
-function notime {
+    if ($env:prompt_time -eq "false") {
+        $env:prompt_time = "true"
+        return
+    }
     $env:prompt_time = "false"
 }
 
