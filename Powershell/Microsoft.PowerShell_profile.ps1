@@ -329,15 +329,19 @@ function _ahead {
 
 function _branch {
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
-    $rem = _remote $branch
     if ($branch) {
+        $rem = ""
+        $ahead = _ahead
+        if (-not $ahead) {
+            $rem = _remote $branch
+        }
         if ($env:short_bprompt -eq "true") {
             if ($branch.Length -gt 10) {
                 $shortBranch = $branch.Substring(0, 10)
                 return ($shortBranch + "...") 
             }
         }
-        $ahead = _ahead
+        
         return ($branch + $ahead + $rem)
     }
     return ""
