@@ -33,7 +33,7 @@ function killdir() {
     } 
 }
 
-function goto() {
+function go() {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
@@ -105,22 +105,27 @@ function aha-help() {
     Write-Host "  aha-profilepaths: Display the profile paths"
     Write-Host "  aha-title: Set the title of the terminal"
     Write-Host "  aha-publishprofile: Copy the profile to the current profile"
-    Write-Host "  aha-gennewpwd: Generate a new password"
-    Write-Host "  aha-quotes: Display a random quote"
+    Write-Host "  aha-genpwd: Generate a password"
+    Write-Host "  aha-quotes: Display a random quote (if have quote file)"
     Write-Host "  aha-v: Display the PowerShell version"
     Write-Host "  aha-hello: Display the welcome message"
     Write-Host "  aha-prompt: Toggle options for the prompt"
     Write-Host
     Write-Host "Directory and file functions:"
     Write-Host "  csln: Clean the dotnet solution"
-    Write-Host "  mkdircd: Create a directory and change to it"
+    Write-Host "  mcd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirastitle: Set the title of the terminal to the current directory"
     Write-Host "  clonecd: Clone a git repository and change to it"
-    Write-Host "  goto: Change to a directory and set the title of the terminal to the directory name"
+    Write-Host "  go: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
+    Write-Host
+    Write-Host "Git functions"
+    Write-Host "  a: 'git add .'"
+    Write-Host "  s: 'git status'"
+    Write-Host "  co: 'git commit -m args[0]' (if no message given message will be 'wip')"
     Write-Host
     Write-Host "Prompt functions:"
     Write-Host "  short: Set the prompt to display the current directory only"
@@ -131,6 +136,7 @@ function aha-help() {
     Write-Host "  notime: Do not display the time in the prompt"
     Write-Host "  nobranch: Do not display the branch in the prompt"
     Write-Host "  branch: Display the branch in the prompt"
+    Write-Host "  naken: Only > prompt"
     Write-Host "  default: Set the prompt to display the time and branch"
     Write-Host
     Write-Host "Tips:"
@@ -166,7 +172,7 @@ function aha-title() {
     }
 }
 
-function aha-gennewpwd() {
+function aha-genpwd() {
     $length = 16
     $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
     $password = -join ((0..$length) | ForEach-Object { $chars[(Get-Random -Minimum 0 -Maximum $chars.Length)] })
@@ -213,6 +219,7 @@ function c {
 
 $env:prompt_time = "true"
 $env:prompt_branch = "true"
+$env:prompt_wd = "true"
 $env:short_prompt = "false"
 $env:short_bprompt = "false"
 
@@ -262,8 +269,15 @@ function branch {
 function default {
     $env:prompt_time = "true"
     $env:prompt_branch = "true"
+    $env:prompt_wd = "true"
     $env:short_prompt = "false"
     $env:short_bprompt = "false"
+}
+
+function naken {
+    $env:prompt_time = "false"
+    $env:prompt_branch = "false"
+    $env:prompt_wd = "false"
 }
 
 function get-ahead {
@@ -311,12 +325,27 @@ function prompt {
         }
     }
 
-    [string]$p = dirforprompt
+    # [string]$p = ""
+    # if ($env:prompt_wd -eq "true") {
+    #     $p = dirforprompt
+    #     if ($dospace) {
+    #         $p = " $p"
+    #     }
+    # }
+    # Write-Host "$p>" -NoNewline
+
+    [string]$space = ""
     if ($dospace) {
-        $p = " $p"
+        $space = " "
     }
+
+    if ($env:prompt_wd -eq "true") {
+        $p = dirforprompt
+    }
+    Write-Host $space -NoNewline
     Write-Host "$p>" -NoNewline
+    
     return " "
 }
 
-aha-hello # Display the welcome message
+aha-hello # Display the welcome message on session start
