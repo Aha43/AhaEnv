@@ -95,37 +95,44 @@ function co {
     git commit -m $cm
 }
 
+function p  {
+    git push
+}
+
 # Aha functions
 
 function aha-help() {
     Write-Host 
     Write-Host "Aha prefix functions:"
     Write-Host "  aha-help: Display this help message"
-    Write-Host "  aha-profilepath: Display the profile path"
-    Write-Host "  aha-profilepaths: Display the profile paths"
     Write-Host "  aha-title: Set the title of the terminal"
-    Write-Host "  aha-publishprofile: Copy the profile to the current profile"
     Write-Host "  aha-genpwd: Generate a password"
     Write-Host "  aha-quotes: Display a random quote (if have quote file)"
     Write-Host "  aha-v: Display the PowerShell version"
     Write-Host "  aha-hello: Display the welcome message"
-    Write-Host "  aha-prompt: Toggle options for the prompt"
+    Write-Host
+    Write-Host "Functions of use when developing this profile (run in dir with profile file)"
+    Write-Host "  pub: Copy the profile to the current profile"
+    Write-Host "  def: Define profile"
+    Write-Host "  propath: Display the profile path"
+    Write-Host "  propaths: Display the profile paths"
     Write-Host
     Write-Host "Directory and file functions:"
     Write-Host "  csln: Clean the dotnet solution"
     Write-Host "  mcd: Create a directory and change to it"
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirastitle: Set the title of the terminal to the current directory"
-    Write-Host "  clonecd: Clone a git repository and change to it"
     Write-Host "  go: Change to a directory and set the title of the terminal to the directory name"
     Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
     Write-Host
     Write-Host "Git functions"
+    Write-Host "  clonecd: Clone a git repository and change to it"
     Write-Host "  a: 'git add .'"
     Write-Host "  s: 'git status'"
     Write-Host "  co: 'git commit -m args[0]' (if no message given message will be 'wip')"
+    Write-Host "  p: 'git push'"
     Write-Host
     Write-Host "Prompt functions:"
     Write-Host "  short: Set the prompt to display the current directory only"
@@ -146,21 +153,25 @@ function aha-help() {
     Write-Host 
 }
 
-function aha-publishprofile() {
+# functions of use when developing this profile
+function pub {
     $SourcePath = Join-Path -Path "." -ChildPath "Microsoft.PowerShell_profile.ps1"
     if (-not (Test-Path $SourcePath)) {
         Write-Host "File not found: $SourcePath"
         return
     }
     Copy-Item -Path $SourcePath -Destination $PROFILE -Force
-    
 }
 
-function aha-profilepath()  {
+function def {
+    . ./Microsoft.PowerShell_profile.ps1
+}
+
+function propath()  {
     $PROFILE
 }
 
-function aha-profilepaths() {
+function propaths() {
     $PROFILE | Get-Member -Type NoteProperty | Format-List
 }
 
@@ -325,22 +336,13 @@ function prompt {
         }
     }
 
-    # [string]$p = ""
-    # if ($env:prompt_wd -eq "true") {
-    #     $p = dirforprompt
-    #     if ($dospace) {
-    #         $p = " $p"
-    #     }
-    # }
-    # Write-Host "$p>" -NoNewline
+    if ($env:prompt_wd -eq "true") {
+        $p = dirforprompt
+    }
 
     [string]$space = ""
     if ($dospace) {
         $space = " "
-    }
-
-    if ($env:prompt_wd -eq "true") {
-        $p = dirforprompt
     }
     Write-Host $space -NoNewline
     Write-Host "$p>" -NoNewline
