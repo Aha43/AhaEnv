@@ -305,16 +305,19 @@ function naken {
     $env:prompt_wd = "false"
 }
 
-function remote
-{
-    $s = git ls-remote --heads origin refs/heads/$args[0]
-    if ($s) {
-        return $true
+function _remote {
+    # Get the remote name
+    $remote = git remote 2>&1
+
+    # Check if the branch exists on the remote
+    $remoteBranch = git ls-remote --heads $remote $args[0] 2>&1
+
+    if ($remoteBranch) {
+        return ""
+    } else {
+        return "*"
     }
-    return $false
 }
-
-
 
 function _ahead {
     $status = git status -b
@@ -326,6 +329,7 @@ function _ahead {
 
 function _branch {
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    $rem = _remote $branch
     if ($branch) {
         if ($env:short_bprompt -eq "true") {
             if ($branch.Length -gt 10) {
@@ -334,7 +338,7 @@ function _branch {
             }
         }
         $ahead = _ahead
-        return ($branch + $ahead)
+        return ($branch + $ahead + $rem)
     }
     return ""
 }
