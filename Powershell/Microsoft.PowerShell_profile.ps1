@@ -111,6 +111,9 @@ function aha-help() {
     Write-Host "  aha-v: Display the PowerShell version"
     Write-Host "  aha-hello: Display the welcome message"
     Write-Host
+    Write-Host "Misc. utilities functions"
+    Write-Host "  week: Week of the year"
+    Write-Host
     Write-Host "Functions of use when developing this profile (run in dir with profile file)"
     Write-Host "  pub: Copy the profile to the current profile"
     Write-Host "  def: Define profile"
@@ -151,6 +154,11 @@ function aha-help() {
     Write-Host "  The ^ symbol (after branch name in the prompt) indicates that the branch is ahead of the remote branch"
     Write-Host "  explorer . : If on windows open the current directory in the file explorer"
     Write-Host 
+}
+
+# misc utilities
+function week {
+    get-date -UFormat %V
 }
 
 # functions of use when developing this profile
@@ -216,16 +224,17 @@ function aha-hello {
     _promptheader
 }
 
-function _promptheader() {
-    $Date = Get-Date -Format "dd.MM.yy"
-    $Wday = (Get-Date).DayOfWeek
-    $User = whoami
-    Write-Host "[$Date][$Wday] ($User)" -ForegroundColor Cyan
-}
-
 function c {
     Clear-Host
     _promptheader
+}
+
+function _promptheader {
+    $Date = Get-Date -Format "dd.MM.yy"
+    $Week = week
+    $Wday = (Get-Date).DayOfWeek
+    $User = whoami
+    Write-Host "[$Date][$Week][$Wday] ($User)" -ForegroundColor Cyan
 }
 
 $env:prompt_time = "true"
