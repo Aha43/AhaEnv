@@ -4,9 +4,63 @@ $env:Path += ";$env:USERPROFILE\bin"
 
 Add-Type -AssemblyName System.Windows.Forms
 
-# Dir functions
+function help {
+    Write-Host 
+    Write-Host "Utilities functions"
+    Write-Host "  help: Display this help message"
+    Write-Host "  hello: Display the welcome message"
+    Write-Host "  week: Week of the year"
+    Write-Host "  title: Set the title of the terminal"
+    Write-Host "  genpwd: Generate a password"
+    Write-Host "  quote: Display a random quote (if have quote file)"
+    Write-Host "  psv: Display the PowerShell version"
+    Write-Host
+    Write-Host "Functions of use when developing this profile (run in dir with profile file)"
+    Write-Host "  pub: Copy the profile to the current profile"
+    Write-Host "  propath: Display the profile path"
+    Write-Host "  propaths: Display the profile paths"
+    Write-Host
+    Write-Host "Directory and file functions:"
+    Write-Host "  csln: Clean the dotnet solution"
+    Write-Host "  mcd: Create a directory and change to it"
+    Write-Host "  killdir: Remove a directory recursively using force"
+    Write-Host "  dirastitle: Set the title of the terminal to the current directory"
+    Write-Host "  go: Change to a directory and set the title of the terminal to the directory name"
+    Write-Host "  dllfullname: Get the full name of a DLL file"
+    Write-Host "  crf: Create a file if it does not exist"
+    Write-Host "  c: Clear the terminal"
+    Write-Host
+    Write-Host "Git functions for every hour git work"
+    Write-Host "  clonecd: Clone a git repository and change working directory to it"
+    Write-Host "  a: 'git add .'"
+    Write-Host "  s: 'git status'"
+    Write-Host "  co: 'git commit -m args[0]' (if no message given message will be 'wip')"
+    Write-Host "  p: 'git push'"
+    Write-Host "  gurl: shows the git remote urls"
+    Write-Host
+    Write-Host "Prompt functions:"
+    Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
+    Write-Host "  bshort: Set the prompt to display the current branch name truncated"
+    Write-Host "  time: Toggle if displaying the time in the prompt"
+    Write-Host "  notime: Do not display the time in the prompt"
+    Write-Host "  nobranch: Do not display the branch in the prompt"
+    Write-Host "  branch: Display the branch in the prompt"
+    Write-Host "  remote: Toggle if to indicate with * branch not remote (it is a bit slugish, default is on)"
+    Write-Host "  naken: Only > prompt"
+    Write-Host "  default: Set the prompt to display the time and branch"
+    Write-Host
+    Write-Host "Tips:"
+    Write-Host "  The prompt can be customized using the prompt functions"
+    Write-Host "  The ^ symbol (after branch name in the prompt) indicates that the branch is ahead of the remote branch"
+    Write-Host "  explorer . : If on windows open the current directory in the file explorer"
+    Write-Host 
+}
 
-function csln() {
+#
+# directory and file functions
+#
+
+function csln {
     if (-not (Test-Path "*.sln")) {
         Write-Host "No solution file found in the current directory."
         return
@@ -16,7 +70,7 @@ function csln() {
     Get-ChildItem -Recurse -Filter "bin" | Remove-Item -Recurse -Force
 }
 
-function mcd() {
+function mcd {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
@@ -25,7 +79,7 @@ function mcd() {
     }
 }
 
-function killdir() {
+function killdir {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
@@ -33,22 +87,22 @@ function killdir() {
     } 
 }
 
-function go() {
+function go {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
         Set-Location -Path $args[0]
-        dirastitle
+        dtitle
     }
 }
 
-function dirastitle() {
+function dtitle {
     $dir = Get-Location
     $lastDir = $dir | Split-Path -Leaf
     $host.UI.RawUI.WindowTitle = $lastDir
 }
 
-function dllfullname() {
+function dllfullname {
     # open file dialog
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     # set the filter
@@ -65,16 +119,18 @@ function crf([string]$filename) {
     }
 }
 
+#
 # git functions
+#
 
-function clonecd() {
+function clonecd {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
         git clone $args[0]
         $dir = $args[0].Split("/")[-1].Split(".")[0]
         Set-Location -Path $dir
-        dirastitle
+        dtitle
     }
 }
 
@@ -99,69 +155,14 @@ function p  {
     git push
 }
 
-# Aha functions
-
-function aha-help() {
-    Write-Host 
-    Write-Host "Aha prefix functions:"
-    Write-Host "  aha-help: Display this help message"
-    Write-Host "  aha-title: Set the title of the terminal"
-    Write-Host "  aha-genpwd: Generate a password"
-    Write-Host "  aha-quotes: Display a random quote (if have quote file)"
-    Write-Host "  aha-v: Display the PowerShell version"
-    Write-Host "  aha-hello: Display the welcome message"
-    Write-Host
-    Write-Host "Misc. utilities functions"
-    Write-Host "  week: Week of the year"
-    Write-Host
-    Write-Host "Functions of use when developing this profile (run in dir with profile file)"
-    Write-Host "  pub: Copy the profile to the current profile"
-    Write-Host "  def: Define profile"
-    Write-Host "  propath: Display the profile path"
-    Write-Host "  propaths: Display the profile paths"
-    Write-Host
-    Write-Host "Directory and file functions:"
-    Write-Host "  csln: Clean the dotnet solution"
-    Write-Host "  mcd: Create a directory and change to it"
-    Write-Host "  killdir: Remove a directory recursively using force"
-    Write-Host "  dirastitle: Set the title of the terminal to the current directory"
-    Write-Host "  go: Change to a directory and set the title of the terminal to the directory name"
-    Write-Host "  dllfullname: Get the full name of a DLL file"
-    Write-Host "  crf: Create a file if it does not exist"
-    Write-Host "  c: Clear the terminal"
-    Write-Host
-    Write-Host "Git functions"
-    Write-Host "  clonecd: Clone a git repository and change to it"
-    Write-Host "  a: 'git add .'"
-    Write-Host "  s: 'git status'"
-    Write-Host "  co: 'git commit -m args[0]' (if no message given message will be 'wip')"
-    Write-Host "  p: 'git push'"
-    Write-Host
-    Write-Host "Prompt functions:"
-    Write-Host "  short: Set the prompt to display the current directory only"
-    Write-Host "  long: Set the prompt to display the full path of the current directory"
-    Write-Host "  bshort: Set the prompt to display the current branch name only"
-    Write-Host "  blong: Set the prompt to display the full branch name"
-    Write-Host "  time: Display the time in the prompt"
-    Write-Host "  notime: Do not display the time in the prompt"
-    Write-Host "  nobranch: Do not display the branch in the prompt"
-    Write-Host "  branch: Display the branch in the prompt"
-    Write-Host "  naken: Only > prompt"
-    Write-Host "  default: Set the prompt to display the time and branch"
-    Write-Host
-    Write-Host "Tips:"
-    Write-Host "  The prompt can be customized using the prompt functions"
-    Write-Host "  The ^ symbol (after branch name in the prompt) indicates that the branch is ahead of the remote branch"
-    Write-Host "  explorer . : If on windows open the current directory in the file explorer"
-    Write-Host 
+function gurl {
+    git remote -v
 }
 
-# misc utilities
-function week {
-    get-date -UFormat %V
-}
-
+#
 # functions of use when developing this profile
+#
+
 function pub {
     $SourcePath = Join-Path -Path "." -ChildPath "Microsoft.PowerShell_profile.ps1"
     if (-not (Test-Path $SourcePath)) {
@@ -171,19 +172,23 @@ function pub {
     Copy-Item -Path $SourcePath -Destination $PROFILE -Force
 }
 
-function def {
-    . ./Microsoft.PowerShell_profile.ps1
-}
-
-function propath()  {
+function propath  {
     $PROFILE
 }
 
-function propaths() {
+function propaths {
     $PROFILE | Get-Member -Type NoteProperty | Format-List
 }
 
-function aha-title() {
+#
+# utilities functions
+#
+
+function week {
+    get-date -UFormat %V
+}
+
+function title {
     if ($args.Length -eq 0) {
         Write-Host "No arguments provided."
     } else {
@@ -191,14 +196,18 @@ function aha-title() {
     }
 }
 
-function aha-genpwd() {
+function genpwd {
     $length = 16
     $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
     $password = -join ((0..$length) | ForEach-Object { $chars[(Get-Random -Minimum 0 -Maximum $chars.Length)] })
     Write-Host $password
 }
 
-function aha-quotes() {
+function psv {
+    $PSVersionTable
+}
+
+function quote {
     $quotesFile = "$env:USERPROFILE\quotes.txt"
     if (Test-Path $quotesFile) {
         Write-Host
@@ -208,19 +217,13 @@ function aha-quotes() {
     }
 }
 
-function aha-v {
-    # Display the PowerShell version
-    $PSVersionTable
-}
-
 #
-# Code related to the prompt
+# functions and code related to the prompt
 #
 
-# Write something upon terminal session start
-function aha-hello {
+function hello {
     Clear-Host
-    aha-quotes
+    quote
     _promptheader
 }
 
@@ -237,13 +240,15 @@ function _promptheader {
     Write-Host "[$Date][$Week][$Wday] ($User)" -ForegroundColor Cyan
 }
 
-$env:prompt_time = "true"
-$env:prompt_branch = "true"
-$env:prompt_wd = "true"
-$env:short_prompt = "false"
-$env:short_bprompt = "false"
+$env:prompt_time = "true" # display the time
+$env:prompt_branch = "true" # display the branch
+$env:prompt_wd = "true" # display the current directory
+$env:short_prompt = "false" # display the current directory only
+$env:short_bprompt = "false" # truncate the branch name
+$env:prompt_remote = "true" # indicate with * branch not remote
+$env:prompt_btruncate = 10 # truncate the branch name to this length
 
-function dirforprompt() {
+function _dirforprompt {
     if ($env:short_prompt -eq "true") {
         $dir = Get-Location
         $lastDir = $dir | Split-Path -Leaf
@@ -255,26 +260,34 @@ function dirforprompt() {
 }
 
 function short {
-    $env:short_prompt = "true"
-}
-
-function long {
+    if ($env:short_prompt -eq "false") {
+        $env:short_prompt = "true"
+        return
+    }
     $env:short_prompt = "false"
 }
 
 function bshort {
-    $env:short_bprompt = "true"
-}
-
-function blong {
+    if ($env:short_bprompt -eq "false") {
+        $env:short_bprompt = "true"
+        return
+    }
     $env:short_bprompt = "false"
 }
 
-function time {
-    $env:prompt_time = "true"
+function btrunc([int]$length) {
+    if ($length -lt 1) {
+        Write-Host "Length must be greater than 0."
+        return
+    }
+    $env:prompt_btruncate = $length
 }
 
-function notime {
+function time {
+    if ($env:prompt_time -eq "false") {
+        $env:prompt_time = "true"
+        return
+    }
     $env:prompt_time = "false"
 }
 
@@ -286,12 +299,21 @@ function branch {
     $env:prompt_branch = "true"
 }
 
+function remote {
+    if ($env:prompt_remote -eq "false") {
+        $env:prompt_remote = "true"
+        return
+    }
+    $env:prompt_remote = "false"
+}
+
 function default {
     $env:prompt_time = "true"
     $env:prompt_branch = "true"
     $env:prompt_wd = "true"
     $env:short_prompt = "false"
     $env:short_bprompt = "false"
+    $env:prompt_remote = "true"
 }
 
 function naken {
@@ -300,7 +322,25 @@ function naken {
     $env:prompt_wd = "false"
 }
 
-function get-ahead {
+function _remote {
+    if ($env:prompt_remote -eq "false") {
+        return ""
+    }
+
+    # Get the remote name
+    $remote = git remote 2>&1
+
+    # Check if the branch exists on the remote
+    $remoteBranch = git ls-remote --heads $remote $args[0] 2>&1
+
+    if ($remoteBranch) {
+        return ""
+    } else {
+        return "*"
+    }
+}
+
+function _ahead {
     $status = git status -b
     if ($status -match "ahead") {
         return "^"
@@ -308,17 +348,22 @@ function get-ahead {
     return ""
 }
 
-function _get-branch-name {
+function _branch {
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
     if ($branch) {
+        $rem = ""
+        $ahead = _ahead
+        if (-not $ahead) {
+            $rem = _remote $branch
+        }
         if ($env:short_bprompt -eq "true") {
-            if ($branch.Length -gt 10) {
-                $shortBranch = $branch.Substring(0, 10)
-                return ($shortBranch + "...") 
+            if ($branch.Length -gt $env:prompt_btruncate) {
+                $shortBranch = $branch.Substring(0, $env:prompt_btruncate)
+                return ($shortBranch + " ..." + $ahead + $rem) 
             }
         }
-        $ahead = get-ahead
-        return ($branch + $ahead)
+        
+        return ($branch + $ahead + $rem)
     }
     return ""
 }
@@ -334,7 +379,7 @@ function prompt {
     
     if ($env:prompt_branch -eq "true") {
         $dospace = $true
-        $branch = _get-branch-name
+        $branch = _branch
         if ($branch) {
             $status = git status --porcelain 
             if ([string]::IsNullOrWhiteSpace($status)) {
@@ -346,7 +391,7 @@ function prompt {
     }
 
     if ($env:prompt_wd -eq "true") {
-        $p = dirforprompt
+        $p = _dirforprompt
     }
 
     [string]$space = ""
@@ -359,5 +404,4 @@ function prompt {
     return " "
 }
 
-aha-hello # Display the welcome message on session start
-
+hello # Display the welcome message on session start
