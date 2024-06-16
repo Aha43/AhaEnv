@@ -156,6 +156,10 @@ function p  {
     git push
 }
 
+function gurl {
+    git remote -v
+}
+
 #
 # functions of use when developing this profile
 #
