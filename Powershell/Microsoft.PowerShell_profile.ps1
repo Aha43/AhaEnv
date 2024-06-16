@@ -247,6 +247,7 @@ $env:prompt_branch = "true"
 $env:prompt_wd = "true"
 $env:short_prompt = "false"
 $env:short_bprompt = "false"
+$env:prompt_remote = "true"
 
 function _dirforprompt {
     if ($env:short_prompt -eq "true") {
@@ -291,12 +292,21 @@ function branch {
     $env:prompt_branch = "true"
 }
 
+function remoteon {
+    $env:prompt_remote = "true"
+}
+
+function remoteoff {
+    $env:prompt_remote = "false"
+}
+
 function default {
     $env:prompt_time = "true"
     $env:prompt_branch = "true"
     $env:prompt_wd = "true"
     $env:short_prompt = "false"
     $env:short_bprompt = "false"
+    $env:prompt_remote = "true"
 }
 
 function naken {
@@ -306,6 +316,10 @@ function naken {
 }
 
 function _remote {
+    if ($env:prompt_remote -eq "false") {
+        return ""
+    }
+
     # Get the remote name
     $remote = git remote 2>&1
 
