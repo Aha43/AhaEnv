@@ -305,6 +305,17 @@ function naken {
     $env:prompt_wd = "false"
 }
 
+function remote
+{
+    $s = git ls-remote --heads origin refs/heads/$args[0]
+    if ($s) {
+        return $true
+    }
+    return $false
+}
+
+
+
 function _ahead {
     $status = git status -b
     if ($status -match "ahead") {
