@@ -240,12 +240,13 @@ function _promptheader {
     Write-Host "[$Date][$Week][$Wday] ($User)" -ForegroundColor Cyan
 }
 
-$env:prompt_time = "true"
-$env:prompt_branch = "true"
-$env:prompt_wd = "true"
-$env:short_prompt = "false"
-$env:short_bprompt = "false"
-$env:prompt_remote = "true"
+$env:prompt_time = "true" # display the time
+$env:prompt_branch = "true" # display the branch
+$env:prompt_wd = "true" # display the current directory
+$env:short_prompt = "false" # display the current directory only
+$env:short_bprompt = "false" # truncate the branch name
+$env:prompt_remote = "true" # indicate with * branch not remote
+$env:prompt_btruncate = 10 # truncate the branch name to this length
 
 function _dirforprompt {
     if ($env:short_prompt -eq "true") {
@@ -272,6 +273,14 @@ function bshort {
         return
     }
     $env:short_bprompt = "false"
+}
+
+function btrunc([int]$length) {
+    if ($length -lt 1) {
+        Write-Host "Length must be greater than 0."
+        return
+    }
+    $env:prompt_btruncate = $length
 }
 
 function time {
@@ -348,8 +357,8 @@ function _branch {
             $rem = _remote $branch
         }
         if ($env:short_bprompt -eq "true") {
-            if ($branch.Length -gt 10) {
-                $shortBranch = $branch.Substring(0, 10)
+            if ($branch.Length -gt $env:prompt_btruncate) {
+                $shortBranch = $branch.Substring(0, $env:prompt_btruncate)
                 return ($shortBranch + " ..." + $ahead + $rem) 
             }
         }
