@@ -40,8 +40,7 @@ function help {
     Write-Host
     Write-Host "Prompt functions:"
     Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
-    Write-Host "  bshort: Set the prompt to display the current branch name only"
-    Write-Host "  blong: Set the prompt to display the full branch name"
+    Write-Host "  bshort: Set the prompt to display the current branch name truncated"
     Write-Host "  time: Toggle if displaying the time in the prompt"
     Write-Host "  notime: Do not display the time in the prompt"
     Write-Host "  nobranch: Do not display the branch in the prompt"
@@ -268,10 +267,10 @@ function short {
 }
 
 function bshort {
-    $env:short_bprompt = "true"
-}
-
-function blong {
+    if ($env:short_bprompt -eq "false") {
+        $env:short_bprompt = "true"
+        return
+    }
     $env:short_bprompt = "false"
 }
 
