@@ -280,6 +280,8 @@ function btrunc([int]$length) {
         return
     }
     $env:prompt_btruncate = $length
+    $env:prompt_branch = "true"
+    $env:short_bprompt = "true"
 }
 
 function time {
