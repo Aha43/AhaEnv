@@ -133,13 +133,10 @@ function clonecd {
     }
 }
 
-function s {
-    git status
-}
-
-function a {
-    git add .
-}
+function s { git status }
+function a { git add . }
+function p  { git push }
+function gurl { git remote -v }
 
 function co {
     $cm = "wip"
@@ -148,14 +145,6 @@ function co {
     }
     
     git commit -m $cm
-}
-
-function p  {
-    git push
-}
-
-function gurl {
-    git remote -v
 }
 
 #
@@ -171,21 +160,14 @@ function pub {
     Copy-Item -Path $SourcePath -Destination $PROFILE -Force
 }
 
-function propath  {
-    $PROFILE
-}
-
-function propaths {
-    $PROFILE | Get-Member -Type NoteProperty | Format-List
-}
+function propath  { $PROFILE }
+function propaths { $PROFILE | Get-Member -Type NoteProperty | Format-List }
 
 #
 # utilities functions
 #
 
-function week {
-    get-date -UFormat %V
-}
+function week { get-date -UFormat %V }
 
 function title {
     if ($args.Length -eq 0) {
@@ -202,9 +184,7 @@ function genpwd {
     Write-Host $password
 }
 
-function psv {
-    $PSVersionTable
-}
+function psv { $PSVersionTable }
 
 function quote {
     $quotesFile = "$env:USERPROFILE\quotes.txt"
