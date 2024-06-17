@@ -246,6 +246,7 @@ $env:short_prompt = "false" # display the current directory only
 $env:short_bprompt = "false" # truncate the branch name
 $env:prompt_remote = "true" # indicate with * branch not remote
 $env:prompt_btruncate = 10 # truncate the branch name to this length
+$env:prompt_bdots = "true" # display ... after the truncated branch name
 
 function _dirforprompt {
     if ($env:short_prompt -eq "true") {
@@ -298,6 +299,14 @@ function branch {
         return
     }
     $env:prompt_branch = "false"
+}
+
+function bdots {
+    if ($env:prompt_bdots -eq "false") {
+        $env:prompt_bdots = "true"
+        return
+    }
+    $env:prompt_bdots = "false"
 }
 
 function remote {
@@ -360,7 +369,10 @@ function _branch {
         if ($env:short_bprompt -eq "true") {
             if ($branch.Length -gt $env:prompt_btruncate) {
                 $shortBranch = $branch.Substring(0, $env:prompt_btruncate)
-                return ($shortBranch + " ..." + $ahead + $rem) 
+                if ($env:prompt_bdots -eq "true") {
+                    return ($shortBranch + " ..." + $ahead + $rem) 
+                }
+                return ($shortBranch + $ahead + $rem) 
             }
         }
         
