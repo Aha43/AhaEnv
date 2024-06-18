@@ -226,17 +226,34 @@ $env:short_prompt = "false" # display the current directory only
 $env:short_bprompt = "false" # truncate the branch name
 $env:prompt_remote = "true" # indicate with * branch not remote
 $env:prompt_btruncate = 10 # truncate the branch name to this length
-$env:prompt_bdots = "true" # display ... after the truncated branch name
+$env:prompt_bdots = "true" # display ... after the truncated branch name in the prompt when short_bprompt is true
+$env:prompt_path_component_count = 3 # number of path components to display in the prompt when short_prompt is true
 
-function _dirforprompt {
-    if ($env:short_prompt -eq "true") {
-        $dir = Get-Location
-        $lastDir = $dir | Split-Path -Leaf
-        return $lastDir
-    }
-    else {
+function _prompt_path {
+    if ($env:short_prompt -eq "false") {
         return $PWD
     }
+    
+    $dir = Get-Location
+    $path = $dir -split '\\'
+    $count = $path.Length
+    if ($count -le $env:prompt_path_component_count) {
+        return $dir
+    }
+
+    $start = $count - $env:prompt_path_component_count
+    $path = $path[$start..($count - 1)] -join '\'
+    return $path
+}
+
+function pc([int]$count) {
+    if ($count -lt 1) {
+        Write-Host "Count must be greater than 0."
+        return
+    } 
+
+    $env:prompt_path_component_count = $count
+    $env:short_prompt = "true"
 }
 
 function short {
@@ -384,7 +401,7 @@ function prompt {
     }
 
     if ($env:prompt_wd -eq "true") {
-        $p = _dirforprompt
+        $p = _prompt_path
     }
 
     [string]$space = ""
