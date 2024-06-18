@@ -36,6 +36,7 @@ function help {
     Write-Host "  s: 'git status'"
     Write-Host "  co: 'git commit -m args[0]' (if no message given message will be 'wip')"
     Write-Host "  p: 'git push'"
+    Write-Host "  b: 'git branch'"
     Write-Host "  gurl: shows the git remote urls"
     Write-Host
     Write-Host "Prompt functions:"
@@ -139,6 +140,8 @@ function clonecd {
 function s { git status }
 function a { git add . }
 function p  { git push }
+function b { git branch }
+    
 function gurl { git remote -v }
 
 function co {
