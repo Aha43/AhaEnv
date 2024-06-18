@@ -47,6 +47,9 @@ function help {
     Write-Host "  remote: Toggle if to indicate with * branch not remote (it is a bit slugish, default is on)"
     Write-Host "  naken: Only > prompt"
     Write-Host "  default: Set the prompt to display the time and branch"
+    Write-Host "  pc: Set the number of path components to display in the prompt when short_prompt is true"
+    Write-Host "  bdots: Toggle if to display ... after the truncated branch name in the prompt when short_bprompt is true"
+    Write-Host "  unix: Toggle if to use / as path separator in the prompt"
     Write-Host
     Write-Host "Tips:"
     Write-Host "  The prompt can be customized using the prompt functions"
@@ -228,6 +231,7 @@ $env:prompt_remote = "true" # indicate with * branch not remote
 $env:prompt_btruncate = 10 # truncate the branch name to this length
 $env:prompt_bdots = "true" # display ... after the truncated branch name in the prompt when short_bprompt is true
 $env:prompt_path_component_count = 3 # number of path components to display in the prompt when short_prompt is true
+$env:unix_path_separator = "true" # use / as path separator in the prompt
 
 function _prompt_path {
     if ($env:short_prompt -eq "false") {
@@ -243,7 +247,16 @@ function _prompt_path {
 
     $start = $count - $env:prompt_path_component_count
     $path = $path[$start..($count - 1)] -join '\'
+
     return $path
+}
+
+function unix {
+    if ($env:unix_path_separator -eq "false") {
+        $env:unix_path_separator = "true"
+        return
+    }
+    $env:unix_path_separator = "false"
 }
 
 function pc([int]$count) {
@@ -402,6 +415,10 @@ function prompt {
 
     if ($env:prompt_wd -eq "true") {
         $p = _prompt_path
+        
+        if ($env:unix_path_separator -eq "true") {
+            $p = $p -replace '\\', '/'
+        }
     }
 
     [string]$space = ""
