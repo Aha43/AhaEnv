@@ -222,7 +222,8 @@ function _promptheader {
     $Week = week
     $Wday = (Get-Date).DayOfWeek
     $User = whoami
-    Write-Host "[$Date][$Week][$Wday] ($User)" -ForegroundColor Cyan
+    $Os = os
+    Write-Host "[$Date][$Week][$Wday] ($User) ($Os)" -ForegroundColor Cyan
 }
 
 $env:prompt_time = "true" # display the time
@@ -230,31 +231,18 @@ $env:prompt_branch = "true" # display the branch
 $env:prompt_wd = "true" # display the current directory
 $env:short_prompt = "false" # display the current directory only
 $env:short_bprompt = "false" # truncate the branch name
-$env:prompt_remote = "true" # indicate with * branch not remote
+$env:prompt_remote = "false" # indicate with * branch not remote
 $env:prompt_btruncate = 10 # truncate the branch name to this length
 $env:prompt_bdots = "true" # display ... after the truncated branch name in the prompt when short_bprompt is true
-$env:prompt_path_component_count = 3 # number of path components to display in the prompt when short_prompt is true
+$env:prompt_path_component_count = 2 # number of path components to display in the prompt when short_prompt is true
 $env:unix_path_separator = "true" # use / as path separator in the prompt
 
-function _prompt_path {
-    if ($env:short_prompt -eq "false") {
-        return $PWD
-    }
-    
-    $dir = Get-Location
-    $path = $dir -split '\\'
-    $count = $path.Length
-    if ($count -le $env:prompt_path_component_count) {
-        return $dir
-    }
-
-    $start = $count - $env:prompt_path_component_count
-    $path = $path[$start..($count - 1)] -join '\'
-
-    return $path
-}
-
 function unix {
+    if (-not $IsWindows) {
+        Write-Host "You don't need this since you must be on a Unix system."
+        return
+    }
+
     if ($env:unix_path_separator -eq "false") {
         $env:unix_path_separator = "true"
         return
@@ -394,6 +382,46 @@ function _branch {
     return ""
 }
 
+function os {
+    if ($IsWindows) {
+        return "Windows"
+    }
+    if ($IsLinux) {
+        return "Linux"
+    }
+    if ($IsMacOS) {
+        return "macOS"
+    }
+    return "Unknown OS"
+}
+
+function _path_dir_separator {
+    if ($IsWindows) {
+        return "\"
+    }
+    return "/"
+}
+
+function _prompt_path {
+    $sep = _path_dir_separator
+
+    if ($env:short_prompt -eq "false") {       
+        return $PWD
+    }
+
+    $dir = Get-Location
+    $path = $dir -split $sep
+    $count = $path.Length
+    if ($count -le $env:prompt_path_component_count) {
+        return $dir
+    }
+
+    $start = $count - $env:prompt_path_component_count
+    $path = $path[$start..($count - 1)] -join $sep
+
+    return $path
+}
+
 function prompt {
     [bool]$dospace = $false
 
@@ -419,8 +447,10 @@ function prompt {
     if ($env:prompt_wd -eq "true") {
         $p = _prompt_path
         
-        if ($env:unix_path_separator -eq "true") {
-            $p = $p -replace '\\', '/'
+        if ($IsWindows) {
+            if ($env:unix_path_separator -eq "true") {
+                $p = $p -replace '\\', '/'
+            }
         }
     }
 
