@@ -4,6 +4,8 @@ $env:Path += ";$env:USERPROFILE\bin"
 
 Add-Type -AssemblyName System.Windows.Forms
 
+$TheShell = "PowerShell"
+
 function help {
     Write-Host 
     Write-Host "Utilities functions"
@@ -223,7 +225,7 @@ function _promptheader {
     $Wday = (Get-Date).DayOfWeek
     $User = whoami
     $Os = os
-    Write-Host "[$Date][$Week][$Wday] ($User) ($Os)" -ForegroundColor Cyan
+    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell)" -ForegroundColor Cyan
 }
 
 $env:prompt_time = "true" # display the time
