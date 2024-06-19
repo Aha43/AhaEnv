@@ -385,23 +385,20 @@ function _branch {
 }
 
 function os {
-    if ($IsWindows) {
-        return "Windows"
-    }
     if ($IsLinux) {
         return "Linux"
     }
     if ($IsMacOS) {
         return "macOS"
     }
-    return "Unknown OS"
+    return "Windows"
 }
 
 function _path_dir_separator {
-    if ($IsWindows) {
-        return "\"
+    if ($IsLinux -or $IsMacOS) {
+        return "/"
     }
-    return "/"
+    return "\"
 }
 
 function _prompt_path {
