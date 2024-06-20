@@ -47,7 +47,6 @@ function help {
     Write-Host "  time: Toggle if displaying the time in the prompt"
     Write-Host "  btrunc: Truncate the branch name to the given length"
     Write-Host "  branch: Toggle displaying the branch in the prompt"
-    Write-Host "  remote: Toggle if to indicate with * branch not remote (it is a bit slugish, default is on)"
     Write-Host "  naken: Only > prompt"
     Write-Host "  default: Set the prompt to display the time and branch"
     Write-Host "  pc: Set the number of path components to display in the prompt when short_prompt is true"
@@ -233,7 +232,6 @@ $env:prompt_branch = "true" # display the branch
 $env:prompt_wd = "true" # display the current directory
 $env:short_prompt = "false" # display the current directory only
 $env:short_bprompt = "false" # truncate the branch name
-$env:prompt_remote = "false" # indicate with * branch not remote
 $env:prompt_btruncate = 10 # truncate the branch name to this length
 $env:prompt_bdots = "true" # display ... after the truncated branch name in the prompt when short_bprompt is true
 $env:prompt_path_component_count = 2 # number of path components to display in the prompt when short_prompt is true
@@ -312,45 +310,18 @@ function bdots {
     $env:prompt_bdots = "false"
 }
 
-function remote {
-    if ($env:prompt_remote -eq "false") {
-        $env:prompt_remote = "true"
-        return
-    }
-    $env:prompt_remote = "false"
-}
-
 function default {
     $env:prompt_time = "true"
     $env:prompt_branch = "true"
     $env:prompt_wd = "true"
     $env:short_prompt = "false"
     $env:short_bprompt = "false"
-    $env:prompt_remote = "true"
 }
 
 function naken {
     $env:prompt_time = "false"
     $env:prompt_branch = "false"
     $env:prompt_wd = "false"
-}
-
-function _remote {
-    if ($env:prompt_remote -eq "false") {
-        return ""
-    }
-
-    # Get the remote name
-    $remote = git remote 2>&1
-
-    # Check if the branch exists on the remote
-    $remoteBranch = git ls-remote --heads $remote $args[0] 2>&1
-
-    if ($remoteBranch) {
-        return ""
-    } else {
-        return "*"
-    }
 }
 
 function _ahead {
@@ -364,22 +335,18 @@ function _ahead {
 function _branch {
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
     if ($branch) {
-        $rem = ""
         $ahead = _ahead
-        if (-not $ahead) {
-            $rem = _remote $branch
-        }
         if ($env:short_bprompt -eq "true") {
             if ($branch.Length -gt $env:prompt_btruncate) {
                 $shortBranch = $branch.Substring(0, $env:prompt_btruncate)
                 if ($env:prompt_bdots -eq "true") {
-                    return ($shortBranch + " ..." + $ahead + $rem) 
+                    return ($shortBranch + " ..." + $ahead) 
                 }
-                return ($shortBranch + $ahead + $rem) 
+                return ($shortBranch + $ahead) 
             }
         }
         
-        return ($branch + $ahead + $rem)
+        return ($branch + $ahead)
     }
     return ""
 }
