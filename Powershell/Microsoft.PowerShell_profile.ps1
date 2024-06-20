@@ -52,11 +52,6 @@ function help {
     Write-Host "  pc: Set the number of path components to display in the prompt when short_prompt is true"
     Write-Host "  bdots: Toggle if to display ... after the truncated branch name in the prompt when short_bprompt is true"
     Write-Host "  unix: Toggle if to use / as path separator in the prompt"
-    Write-Host
-    Write-Host "Tips:"
-    Write-Host "  The prompt can be customized using the prompt functions"
-    Write-Host "  The ^ symbol (after branch name in the prompt) indicates that the branch is ahead of the remote branch"
-    Write-Host "  explorer . : If on windows open the current directory in the file explorer"
     Write-Host 
 }
 
