@@ -394,7 +394,14 @@ function os {
     return "Windows"
 }
 
-function _path_dir_separator {
+function _path_dir_separator_char {
+    if ($IsLinux -or $IsMacOS) {
+        return '/'
+    }
+    return '\\'
+}
+
+function _path_dir_separator_str {
     if ($IsLinux -or $IsMacOS) {
         return "/"
     }
@@ -402,21 +409,22 @@ function _path_dir_separator {
 }
 
 function _prompt_path {
-    $sep = _path_dir_separator
+    $sep_char = _path_dir_separator_char
+    $sep_str = _path_dir_separator_str
 
     if ($env:short_prompt -eq "false") {       
         return $PWD
     }
 
     $dir = Get-Location
-    $path = $dir -split $sep
+    $path = $dir -split $sep_char
     $count = $path.Length
     if ($count -le $env:prompt_path_component_count) {
         return $dir
     }
 
     $start = $count - $env:prompt_path_component_count
-    $path = $path[$start..($count - 1)] -join $sep
+    $path = $path[$start..($count - 1)] -join $sep_str
 
     return $path
 }
