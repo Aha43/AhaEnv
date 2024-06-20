@@ -2,8 +2,6 @@
 # add the bin directory in user home to path
 $env:Path += ";$env:USERPROFILE\bin"
 
-Add-Type -AssemblyName System.Windows.Forms
-
 function help {
     Write-Host 
     Write-Host "Utilities functions"
@@ -26,7 +24,6 @@ function help {
     Write-Host "  killdir: Remove a directory recursively using force"
     Write-Host "  dirastitle: Set the title of the terminal to the current directory"
     Write-Host "  go: Change to a directory and set the title of the terminal to the directory name"
-    Write-Host "  dllfullname: Get the full name of a DLL file"
     Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
     Write-Host
@@ -112,17 +109,6 @@ function dtitle {
     $dir = Get-Location
     $lastDir = $dir | Split-Path -Leaf
     $host.UI.RawUI.WindowTitle = $lastDir
-}
-
-function dllfullname {
-    # open file dialog
-    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-    # set the filter
-    $openFileDialog.Filter = "DLL Files (*.dll)|*.dll"
-    # show the dialog
-    $openFileDialog.ShowDialog() | Out-Null
-    $path = $openFileDialog.FileName
-    ([system.reflection.assembly]::loadfile($path)).FullName
 }
 
 function crf([string]$filename) {
