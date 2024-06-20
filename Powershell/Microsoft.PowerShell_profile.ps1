@@ -53,6 +53,21 @@ function help {
     Write-Host 
 }
 
+function _promptheader {
+    $Date = Get-Date -Format "dd.MM.yy"
+    $Week = week
+    $Wday = (Get-Date).DayOfWeek
+    $User = whoami
+    $Os = os
+    $BranchInfo = ""
+    $ShellVersion = $PSVersionTable.PSVersion.ToString()
+    $TheShell = "PowerShell"
+    if ($TheBranch) {
+        $BranchInfo = " ($TheBranch)"
+    }
+    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell.$ShellVersion)$BranchInfo" -ForegroundColor Cyan
+}
+
 #
 # directory and file functions
 #
@@ -169,6 +184,9 @@ function pub {
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
     Add-Content -Path $PROFILE -Value "hello"
 }
+
+function propath  { $PROFILE }
+function propaths { $PROFILE | Get-Member -Type NoteProperty | Format-List }
 
 #
 # utilities functions
@@ -386,21 +404,6 @@ function _prompt_path {
     $path = $path[$start..($count - 1)] -join $sep_str
 
     return $path
-}
-
-function _promptheader {
-    $Date = Get-Date -Format "dd.MM.yy"
-    $Week = week
-    $Wday = (Get-Date).DayOfWeek
-    $User = whoami
-    $Os = os
-    $BranchInfo = ""
-    $ShellVersion = $PSVersionTable.PSVersion.ToString()
-    $TheShell = "PowerShell"
-    if ($TheBranch) {
-        $BranchInfo = " ($TheBranch)"
-    }
-    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell.$ShellVersion)$BranchInfo" -ForegroundColor Cyan
 }
 
 function prompt {
