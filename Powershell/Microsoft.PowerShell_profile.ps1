@@ -241,9 +241,9 @@ function _promptheader {
 $env:prompt_time = "true" # display the time
 $env:prompt_branch = "true" # display the branch
 $env:prompt_wd = "true" # display the current directory
-$env:short_prompt = "false" # display the current directory only
-$env:short_bprompt = "false" # truncate the branch name
-$env:prompt_btruncate = 10 # truncate the branch name to this length
+$env:short_prompt = "true" # display the current directory only
+$env:short_bprompt = "true" # truncate the branch name
+$env:prompt_btruncate = 15 # truncate the branch name to this length
 $env:prompt_bdots = "true" # display ... after the truncated branch name in the prompt when short_bprompt is true
 $env:prompt_path_component_count = 2 # number of path components to display in the prompt when short_prompt is true
 $env:unix_path_separator = "true" # use / as path separator in the prompt
