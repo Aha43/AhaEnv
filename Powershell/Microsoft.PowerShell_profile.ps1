@@ -60,7 +60,7 @@ function _promptheader {
     $ShellVersion = $PSVersionTable.PSVersion.ToString()
     $TheShell = "PowerShell"
     if ($TheBranch) {
-        $BranchInfo = " ($TheBranch)"
+        $BranchInfo = " {$TheBranch}"
     }
     Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell.$ShellVersion)$BranchInfo" -ForegroundColor Cyan
 }
