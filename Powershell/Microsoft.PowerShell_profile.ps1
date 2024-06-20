@@ -164,11 +164,18 @@ function pub {
         Write-Host "File not found: $SourcePath"
         return
     }
-    Copy-Item -Path $SourcePath -Destination $PROFILE -Force
-}
 
-function propath  { $PROFILE }
-function propaths { $PROFILE | Get-Member -Type NoteProperty | Format-List }
+    #read profile content into a variable
+    $profileContent = Get-Content -Path $SourcePath
+
+    #write the content to the current profile
+    Set-Content -Path $PROFILE -Value $profileContent -Force
+
+    $Branch = _branch
+    #append to the current profile a veriable having value of $Branch
+    Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
+    Add-Content -Path $PROFILE -Value "hello"
+}
 
 #
 # utilities functions
@@ -224,7 +231,11 @@ function _promptheader {
     $Wday = (Get-Date).DayOfWeek
     $User = whoami
     $Os = os
-    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell)" -ForegroundColor Cyan
+    $BranchInfo = ""
+    if ($TheBranch) {
+        $BranchInfo = " ($TheBranch)"
+    }
+    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell)$BranchInfo" -ForegroundColor Cyan
 }
 
 $env:prompt_time = "true" # display the time
@@ -238,7 +249,8 @@ $env:prompt_path_component_count = 2 # number of path components to display in t
 $env:unix_path_separator = "true" # use / as path separator in the prompt
 
 function unix {
-    if (-not $IsWindows) {
+    $os = os
+    if ($os -ne "Windows") {
         Write-Host "You don't need this since you must be on a Unix system."
         return
     }
@@ -421,7 +433,8 @@ function prompt {
     if ($env:prompt_wd -eq "true") {
         $p = _prompt_path
         
-        if ($IsWindows) {
+        $os = os
+        if ($os -eq "Windows") {
             if ($env:unix_path_separator -eq "true") {
                 $p = $p -replace '\\', '/'
             }
@@ -437,5 +450,3 @@ function prompt {
     
     return " "
 }
-
-hello # Display the welcome message on session start
