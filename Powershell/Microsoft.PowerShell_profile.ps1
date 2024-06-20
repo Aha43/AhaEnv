@@ -4,8 +4,6 @@ $env:Path += ";$env:USERPROFILE\bin"
 
 Add-Type -AssemblyName System.Windows.Forms
 
-$TheShell = "PowerShell"
-
 function help {
     Write-Host 
     Write-Host "Utilities functions"
@@ -220,19 +218,6 @@ function c {
     _promptheader
 }
 
-function _promptheader {
-    $Date = Get-Date -Format "dd.MM.yy"
-    $Week = week
-    $Wday = (Get-Date).DayOfWeek
-    $User = whoami
-    $Os = os
-    $BranchInfo = ""
-    if ($TheBranch) {
-        $BranchInfo = " ($TheBranch)"
-    }
-    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell)$BranchInfo" -ForegroundColor Cyan
-}
-
 $env:prompt_time = "true" # display the time
 $env:prompt_branch = "true" # display the branch
 $env:prompt_wd = "true" # display the current directory
@@ -401,6 +386,21 @@ function _prompt_path {
     $path = $path[$start..($count - 1)] -join $sep_str
 
     return $path
+}
+
+function _promptheader {
+    $Date = Get-Date -Format "dd.MM.yy"
+    $Week = week
+    $Wday = (Get-Date).DayOfWeek
+    $User = whoami
+    $Os = os
+    $BranchInfo = ""
+    $ShellVersion = $PSVersionTable.PSVersion.ToString()
+    $TheShell = "PowerShell"
+    if ($TheBranch) {
+        $BranchInfo = " ($TheBranch)"
+    }
+    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell.$ShellVersion)$BranchInfo" -ForegroundColor Cyan
 }
 
 function prompt {
