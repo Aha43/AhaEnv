@@ -192,10 +192,6 @@ function pub {
     #append to the current profile a veriable having value of $Branch
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
     Add-Content -Path $PROFILE -Value "hello"
-
-    if (IsThisWindows -and ($PSVersionTable.PSVersion.Major -lt 6) -and (Test-CommandExists pwsh)) {
-        Add-Content -Path $PROFILE -Value "pwsh"
-    }
 }
 
 function propath  { $PROFILE }
@@ -241,6 +237,18 @@ function quote {
 function hello {
     Clear-Host
     quote
+    if (IsThisWindows) {
+        if ($PSVersionTable.PSVersion.Major -gt 5) {
+            Write-Host
+            Write-Host "You are using a newer version of PowerShell. If you want to exit to version 5 type 'exit'."
+            Write-Host
+        }
+        elseif (Test-CommandExists "pwsh") {
+            Write-Host
+            Write-Host "You can switch to PowerShell Core by typing 'pwsh'."
+            Write-Host
+        }
+    }
     _promptheader
 }
 
