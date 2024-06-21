@@ -12,6 +12,7 @@ function help {
     Write-Host "  genpwd: Generate a password"
     Write-Host "  quote: Display a random quote (if have quote file)"
     Write-Host "  psv: Display the PowerShell version"
+    Write-Host "  Test-CommandExists: Test if a command exists"
     Write-Host
     Write-Host "Functions of use when developing this profile (run in dir with profile file)"
     Write-Host "  pub: Copy the profile to the current profile"
@@ -48,6 +49,28 @@ function help {
     Write-Host "  bdots: Toggle if to display ... after the truncated branch name in the prompt when short_bprompt is true"
     Write-Host "  unix: Toggle if to use / as path separator in the prompt"
     Write-Host 
+}
+
+Function Test-CommandExists($command)
+{
+    $oldPreference = $ErrorActionPreference
+
+    $ErrorActionPreference = 'stop'
+
+    try {
+        if (Get-Command $command) {
+            return $true
+        }
+        return $false
+    }
+
+    Catch {
+        return $false
+    }
+
+    Finally {
+        $ErrorActionPreference=$oldPreference
+    }
 }
 
 function _promptheader {
@@ -169,6 +192,10 @@ function pub {
     #append to the current profile a veriable having value of $Branch
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
     Add-Content -Path $PROFILE -Value "hello"
+
+    if (IsThisWindows -and ($PSVersionTable.PSVersion.Major -lt 6) -and (Test-CommandExists pwsh)) {
+        Add-Content -Path $PROFILE -Value "pwsh"
+    }
 }
 
 function propath  { $PROFILE }
@@ -232,10 +259,17 @@ $env:prompt_bdots = "true" # display ... after the truncated branch name in the 
 $env:prompt_path_component_count = 2 # number of path components to display in the prompt when short_prompt is true
 $env:unix_path_separator = "true" # use / as path separator in the prompt
 
-function unix {
+function IsThisWindows {
     $os = os
     if ($os -ne "Windows") {
-        Write-Host "You don't need this since you must be on a Unix system."
+        return $false
+    }
+    return $true
+}
+
+function unix {
+    if (IsThisWindows -eq $false) {
+        Write-Host "You don't need this since you must be on a Unix type system."
         return
     }
 
