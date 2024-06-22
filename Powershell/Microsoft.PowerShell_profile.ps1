@@ -238,18 +238,6 @@ function quote {
 function hello {
     Clear-Host
     quote
-    if (IsThisWindows) {
-        if ($PSVersionTable.PSVersion.Major -gt 5) {
-            Write-Host
-            Write-Host "You are using a newer version of PowerShell. If you want to exit to version 5 type 'exit'."
-            Write-Host
-        }
-        elseif (Test-CommandExists "pwsh") {
-            Write-Host
-            Write-Host "You can switch to PowerShell Core by typing 'pwsh'."
-            Write-Host
-        }
-    }
     _promptheader
 }
 
