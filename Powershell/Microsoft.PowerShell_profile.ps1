@@ -85,7 +85,7 @@ function _promptheader {
     if ($TheBranch) {
         $BranchInfo = " {$TheBranch}"
     }
-    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell.$ShellVersion)$BranchInfo" -ForegroundColor Cyan
+    Write-Host "[$Date][$Week][$Wday] ($User) ($Os) ($TheShell $ShellVersion)$BranchInfo" -ForegroundColor Cyan
 }
 
 #
