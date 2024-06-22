@@ -2,6 +2,8 @@
 # add the bin directory in user home to path
 $env:Path += ";$env:USERPROFILE\bin"
 
+. pwshlib\git-fun.ps1
+
 function help {
     Write-Host 
     Write-Host "Utilities functions"
@@ -193,6 +195,10 @@ function pub {
     #append to the current profile a veriable having value of $Branch
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
     Add-Content -Path $PROFILE -Value "hello"
+
+    
+
+    Copy-Item -Path "pwshlib" -Destination "$env:USERPROFILE" -Recurse
 }
 
 function propath  { $PROFILE }
