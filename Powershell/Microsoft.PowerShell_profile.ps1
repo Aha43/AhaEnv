@@ -36,6 +36,7 @@ function help {
     Write-Host "  p: 'git push'"
     Write-Host "  b: 'git branch'"
     Write-Host "  gurl: shows the git remote urls"
+    Write-Host "  bname: Display the current branch"
     Write-Host
     Write-Host "Prompt functions:"
     Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
@@ -188,7 +189,7 @@ function pub {
     #write the content to the current profile
     Set-Content -Path $PROFILE -Value $profileContent -Force
 
-    $Branch = _branch
+    $Branch = bname
     #append to the current profile a veriable having value of $Branch
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
     Add-Content -Path $PROFILE -Value "hello"
@@ -371,8 +372,17 @@ function _ahead {
     return ""
 }
 
-function _branch {
+#function to get the current branch
+function bname {
     $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    if ($branch) {
+        return $branch
+    }
+    return ""
+}
+
+function _branch {
+    $branch = bname
     if ($branch) {
         $ahead = _ahead
         if ($env:short_bprompt -eq "true") {
