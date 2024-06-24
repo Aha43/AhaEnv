@@ -2,7 +2,15 @@
 # add the bin directory in user home to path
 $env:Path += ";$env:USERPROFILE\bin"
 
-. pwshlib\git-fun.ps1
+$LibDir = (Get-Item $PROFILE).Directory.FullName + "\pwshlib"
+if (Test-Path -Path $LibDir) {
+    $file = $LibDir + "\git-fun.ps1"
+    if (Test-Path -Path $file) {
+        . $file
+    }
+}
+
+. .\pwshlib\git-fun.ps1
 
 function help {
     Write-Host 
@@ -144,37 +152,6 @@ function crf([string]$filename) {
 }
 
 #
-# git functions
-#
-
-function clonecd {
-    if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
-    } else {
-        git clone $args[0]
-        $dir = $args[0].Split("/")[-1].Split(".")[0]
-        Set-Location -Path $dir
-        dtitle
-    }
-}
-
-function s { git status }
-function a { git add . }
-function p  { git push }
-function b { git branch }
-    
-function gurl { git remote -v }
-
-function co {
-    $cm = "wip"
-    if ($args.Length -eq 1) {
-        $cm = $args[0]
-    }
-    
-    git commit -m $cm
-}
-
-#
 # functions of use when developing this profile
 #
 
@@ -196,9 +173,17 @@ function pub {
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
     Add-Content -Path $PROFILE -Value "hello"
 
-    
+    $LibSourcePath = Join-Path -Path "." -ChildPath "pwshlib"
+    if (-not (Test-Path $LibSourcePath)) {
+        Write-Host "Directory not found: $LibSourcePath"
+        return
+    }
 
-    Copy-Item -Path "pwshlib" -Destination "$env:USERPROFILE" -Recurse
+    $LibTargetPath = (Get-Item $PROFILE).Directory.FullName
+
+    Copy-Item -Path $LibSourcePath -Destination $LibTargetPath -Recurse -Force
+
+    #Copy-Item -Path "pwshlib" -Destination "$env:USERPROFILE" -Recurse
 }
 
 function propath  { $PROFILE }
