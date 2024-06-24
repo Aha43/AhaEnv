@@ -2,15 +2,14 @@
 # add the bin directory in user home to path
 $env:Path += ";$env:USERPROFILE\bin"
 
-$LibDir = (Get-Item $PROFILE).Directory.FullName + "\pwshlib"
-if (Test-Path -Path $LibDir) {
-    $file = $LibDir + "\git-fun.ps1"
-    if (Test-Path -Path $file) {
-        . $file
-    }
-}
 
-. .\pwshlib\git-fun.ps1
+# Loading functions
+$LibDir = (Get-Item $PROFILE).Directory.FullName + "\pwshlib"
+$funfiles = Get-ChildItem -Path $LibDir -Filter "*.ps1"
+foreach ($file in $funfiles) {
+    Write-Host ("Loading functions from " + $file.FullName)
+    . $file.FullName
+}
 
 function help {
     Write-Host 
@@ -182,8 +181,6 @@ function pub {
     $LibTargetPath = (Get-Item $PROFILE).Directory.FullName
 
     Copy-Item -Path $LibSourcePath -Destination $LibTargetPath -Recurse -Force
-
-    #Copy-Item -Path "pwshlib" -Destination "$env:USERPROFILE" -Recurse
 }
 
 function propath  { $PROFILE }
