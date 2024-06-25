@@ -40,9 +40,9 @@ function help {
     Write-Host
     Write-Host "Prompt functions:"
     Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
-    Write-Host "  bshort: Set the prompt to display the current branch name truncated"
+    Write-Host "  bshort: Toggle if the prompt to display the full branch name or truncated"
     Write-Host "  time: Toggle if displaying the time in the prompt"
-    Write-Host "  btrunc: Truncate the branch name to the given length"
+    Write-Host "  btrunc: Set the length to truncate the branch name in the prompt when short_bprompt is true"
     Write-Host "  branch: Toggle displaying the branch in the prompt"
     Write-Host "  naken: Only > prompt"
     Write-Host "  default: Set the prompt to display the time and branch"
