@@ -37,16 +37,6 @@ function help {
     Write-Host "  crf: Create a file if it does not exist"
     Write-Host "  c: Clear the terminal"
     Write-Host
-    Write-Host "Git functions for every hour git work"
-    Write-Host "  clonecd: Clone a git repository and change working directory to it"
-    Write-Host "  a: 'git add .'"
-    Write-Host "  s: 'git status'"
-    Write-Host "  co: 'git commit -m args[0]' (if no message given message will be 'wip')"
-    Write-Host "  p: 'git push'"
-    Write-Host "  b: 'git branch'"
-    Write-Host "  gurl: shows the git remote urls"
-    Write-Host "  bname: Display the current branch"
-    Write-Host
     Write-Host "Prompt functions:"
     Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
     Write-Host "  bshort: Toggle if the prompt to display the full branch name or truncated"
@@ -344,15 +334,6 @@ function _ahead {
     $status = git status -b
     if ($status -match "ahead") {
         return "^"
-    }
-    return ""
-}
-
-#function to get the current branch
-function bname {
-    $branch = & git rev-parse --abbrev-ref HEAD 2> $null
-    if ($branch) {
-        return $branch
     }
     return ""
 }

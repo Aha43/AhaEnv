@@ -24,3 +24,25 @@ function co {
     
     git commit -m $cm
 }
+
+function bname {
+    $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    if ($branch) {
+        return $branch
+    }
+    return ""
+}
+
+function help-git {
+    Write-Host
+    Write-Host "clonecd <url> - clone a git repo and cd into it"
+    Write-Host "s - git status"
+    Write-Host "a - git add ."
+    Write-Host "p - git push"
+    Write-Host "b - git branch"
+    Write-Host "gurl - git remote -v"
+    Write-Host "co <message> - git commit -m <message>"
+    Write-Host "bname - get the current branch name"
+    Write-Host "help-git - show this help"
+    Write-Host
+}
