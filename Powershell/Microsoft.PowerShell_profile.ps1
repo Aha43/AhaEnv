@@ -6,23 +6,13 @@ $env:Path += ";$env:USERPROFILE\bin"
 # Loading functions
 $LibDir = (Get-Item $PROFILE).Directory.FullName + "\pwshlib"
 $funfiles = Get-ChildItem -Path $LibDir -Filter "*.ps1"
+
 foreach ($file in $funfiles) {
-    Write-Host ("Loading functions from " + $file.FullName)
     . $file.FullName
 }
 
 function help {
     Write-Host 
-    Write-Host "Utilities functions"
-    Write-Host "  help: Display this help message"
-    Write-Host "  hello: Display the welcome message"
-    Write-Host "  week: Week of the year"
-    Write-Host "  title: Set the title of the terminal"
-    Write-Host "  genpwd: Generate a password"
-    Write-Host "  quote: Display a random quote (if have quote file)"
-    Write-Host "  psv: Display the PowerShell version"
-    Write-Host "  Test-CommandExists: Test if a command exists"
-    Write-Host
     Write-Host "Functions of use when developing this profile (run in dir with profile file)"
     Write-Host "  pub: Copy the profile to the current profile"
     Write-Host "  propath: Display the profile path"
@@ -180,34 +170,7 @@ function propaths { $PROFILE | Get-Member -Type NoteProperty | Format-List }
 # utilities functions
 #
 
-function week { get-date -UFormat %V }
 
-function title {
-    if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
-    } else {
-        $host.UI.RawUI.WindowTitle = $args[0] 
-    }
-}
-
-function genpwd {
-    $length = 16
-    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
-    $password = -join ((0..$length) | ForEach-Object { $chars[(Get-Random -Minimum 0 -Maximum $chars.Length)] })
-    Write-Host $password
-}
-
-function psv { $PSVersionTable }
-
-function quote {
-    $quotesFile = "$env:USERPROFILE\quotes.txt"
-    if (Test-Path $quotesFile) {
-        Write-Host
-        $lines = @(Get-Content $quotesFile)
-        $lines | Get-Random
-        Write-Host
-    }
-}
 
 #
 # functions and code related to the prompt
