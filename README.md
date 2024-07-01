@@ -1,5 +1,7 @@
 # My personal computer environment configurations
 
+[Project](https://github.com/users/Aha43/projects/4)
+
 ## Git: the git configuration file I use ##
 
 ## Powershell: the powershell profile I use ##
