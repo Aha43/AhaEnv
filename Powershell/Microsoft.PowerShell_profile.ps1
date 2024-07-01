@@ -2,65 +2,11 @@
 # add the bin directory in user home to path
 $env:Path += ";$env:USERPROFILE\bin"
 
-
 # Loading functions
 $LibDir = (Get-Item $PROFILE).Directory.FullName + "\pwshlib"
 $funfiles = Get-ChildItem -Path $LibDir -Filter "*.ps1"
-
 foreach ($file in $funfiles) {
     . $file.FullName
-}
-
-function help {
-    Write-Host 
-    Write-Host "Functions of use when developing this profile (run in dir with profile file)"
-    Write-Host "  pub: Copy the profile to the current profile"
-    Write-Host "  propath: Display the profile path"
-    Write-Host "  propaths: Display the profile paths"
-    Write-Host
-    Write-Host "Directory and file functions:"
-    Write-Host "  csln: Clean the dotnet solution"
-    Write-Host "  mcd: Create a directory and change to it"
-    Write-Host "  killdir: Remove a directory recursively using force"
-    Write-Host "  dirastitle: Set the title of the terminal to the current directory"
-    Write-Host "  go: Change to a directory and set the title of the terminal to the directory name"
-    Write-Host "  crf: Create a file if it does not exist"
-    Write-Host "  c: Clear the terminal"
-    Write-Host
-    Write-Host "Prompt functions:"
-    Write-Host "  short: Toggle if the prompt to display the current directory only or complete path"
-    Write-Host "  bshort: Toggle if the prompt to display the full branch name or truncated"
-    Write-Host "  time: Toggle if displaying the time in the prompt"
-    Write-Host "  btrunc: Set the length to truncate the branch name in the prompt when short_bprompt is true"
-    Write-Host "  branch: Toggle displaying the branch in the prompt"
-    Write-Host "  naken: Only > prompt"
-    Write-Host "  default: Set the prompt to display the time and branch"
-    Write-Host "  pc: Set the number of path components to display in the prompt when short_prompt is true"
-    Write-Host "  bdots: Toggle if to display ... after the truncated branch name in the prompt when short_bprompt is true"
-    Write-Host "  unix: Toggle if to use / as path separator in the prompt"
-    Write-Host 
-}
-
-Function Test-CommandExists($command)
-{
-    $oldPreference = $ErrorActionPreference
-
-    $ErrorActionPreference = 'stop'
-
-    try {
-        if (Get-Command $command) {
-            return $true
-        }
-        return $false
-    }
-
-    Catch {
-        return $false
-    }
-
-    Finally {
-        $ErrorActionPreference=$oldPreference
-    }
 }
 
 function _promptheader {
@@ -78,61 +24,38 @@ function _promptheader {
     Write-Host "[$Date][$Week][$Wday] ($User) <$Os> <$TheShell $ShellVersion>$BranchInfo" -ForegroundColor Cyan
 }
 
-#
-# directory and file functions
-#
-
-function csln {
-    if (-not (Test-Path "*.sln")) {
-        Write-Host "No solution file found in the current directory."
-        return
-    }
-
-    Get-ChildItem -Recurse -Filter "obj" | Remove-Item -Recurse -Force
-    Get-ChildItem -Recurse -Filter "bin" | Remove-Item -Recurse -Force
+function help {
+    Write-Host
+    Write-Host "General functions:"
+    Write-Host "    help:                           Show this help"
+    Write-Host "    pub:                            Publish the current profile to the current profile"
+    Write-Host "    propath:                        Show the current profile path"
+    Write-Host "    propaths:                       Show the properties of the current profile"
+    Write-Host
+    Write-Host "Prompt functions:"
+    Write-Host "    hello:                          Clear the screen and show the prompt header"
+    Write-Host "    c:                              Clear the screen and show the prompt header"
+    Write-Host "    time:                           Toggle the display of the time in the prompt"
+    Write-Host "    branch:                         Toggle the display of the branch in the prompt"
+    Write-Host "    bdots:                          Toggle the display of ... after the truncated branch name in the prompt"
+    Write-Host "    bshort:                         Toggle the display of the branch name in the prompt"
+    Write-Host "    btrunc <length>:                Truncate the branch name to the specified length"
+    Write-Host "    pc <count>:                     Display the specified number of path components in the prompt"
+    Write-Host "    short:                          Toggle the display of the current directory only in the prompt"
+    Write-Host "    unix:                           Toggle the use of / as path separator in the prompt"
+    Write-Host "    default:                        Reset the prompt to the default settings"
+    Write-Host "    naken:                          Remove all prompt elements"
+    Write-Host
+    Write-Host "More help:"
+    Write-Host "    ps-help:                        Show PowerShell functions"
+    Write-Host "    dev-help:                       Show development functions"
+    Write-Host "    git-help:                       Show git functions"
+    Write-Host "    fs-help:                        Show file system functions"
+    Write-Host "    ut-help:                        Show utility functions"
+    Write-Host
 }
 
-function mcd {
-    if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
-    } else {
-        New-Item -ItemType Directory -Path $args[0] -Force
-        Set-Location -Path $args[0]
-    }
-}
-
-function killdir {
-    if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
-    } else {
-        Remove-Item -Path $args[0] -Recurse -Force
-    } 
-}
-
-function go {
-    if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
-    } else {
-        Set-Location -Path $args[0]
-        dtitle
-    }
-}
-
-function dtitle {
-    $dir = Get-Location
-    $lastDir = $dir | Split-Path -Leaf
-    $host.UI.RawUI.WindowTitle = $lastDir
-}
-
-function crf([string]$filename) {
-    if (-not (Test-Path $filename)) {
-        New-Item -ItemType File -Path $filename -Force
-    }
-}
-
-#
 # functions of use when developing this profile
-#
 
 function pub {
     $SourcePath = Join-Path -Path "." -ChildPath "Microsoft.PowerShell_profile.ps1"
@@ -165,12 +88,6 @@ function pub {
 
 function propath  { $PROFILE }
 function propaths { $PROFILE | Get-Member -Type NoteProperty | Format-List }
-
-#
-# utilities functions
-#
-
-
 
 #
 # functions and code related to the prompt

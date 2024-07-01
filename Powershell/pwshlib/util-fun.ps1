@@ -1,4 +1,16 @@
 
+function ut-help {
+    Write-Host
+    Write-Host "Utility functions:"
+    Write-Host "    ut-help:                        Show this help"
+    Write-Host "    week:                           Get the current week number"
+    Write-Host "    title <title>:                  Set the terminal title"
+    Write-Host "    genpwd:                         Generate a random password"
+    Write-Host "    psv:                            Show the PowerShell version"
+    Write-Host "    quote:                          how a random quote"
+    Write-Host
+}
+
 function week { get-date -UFormat %V }
 
 function title {
@@ -26,15 +38,4 @@ function quote {
         $lines | Get-Random
         Write-Host
     }
-}
-
-function help-utilities {
-    Write-Host
-    Write-Host "week - get the current week number"
-    Write-Host "title <title> - set the terminal title"
-    Write-Host "genpwd - generate a random password"
-    Write-Host "psv - show the PowerShell version"
-    Write-Host "quote - show a random quote"
-    Write-Host "utilities - show this help"
-    Write-Host
 }

@@ -1,6 +1,24 @@
+
+# Git functions
+
+function git-help {
+    Write-Host
+    Write-Host "Git functions:"
+    Write-Host "    git-help:                       Show this help"
+    Write-Host "    clonecd <url>:                  Clone a git repo and cd into it"
+    Write-Host "    s:                              git status"
+    Write-Host "    a:                              git add ."
+    Write-Host "    p:                              git push"
+    Write-Host "    b:                              git branch"
+    Write-Host "    gurl:                           git remote -v"
+    Write-Host "    co <message>:                   git commit -m <message>"
+    Write-Host "    bname:                          get the current branch name"
+    Write-Host
+}
+
 function clonecd {
     if ($args.Length -eq 0) {
-        Write-Host "No arguments provided."
+        Write-Host "Usage: clonecd <url>"
     } else {
         git clone $args[0]
         $dir = $args[0].Split("/")[-1].Split(".")[0]
@@ -31,18 +49,4 @@ function bname {
         return $branch
     }
     return ""
-}
-
-function help-git {
-    Write-Host
-    Write-Host "clonecd <url> - clone a git repo and cd into it"
-    Write-Host "s - git status"
-    Write-Host "a - git add ."
-    Write-Host "p - git push"
-    Write-Host "b - git branch"
-    Write-Host "gurl - git remote -v"
-    Write-Host "co <message> - git commit -m <message>"
-    Write-Host "bname - get the current branch name"
-    Write-Host "help-git - show this help"
-    Write-Host
 }
