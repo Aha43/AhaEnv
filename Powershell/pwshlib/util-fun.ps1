@@ -14,7 +14,6 @@ function ut-help {
 
 function week { get-date -UFormat %V }
 
-#list all environment variables sorted by name
 function envs {
     Get-ChildItem Env: | Sort-Object Name
 }

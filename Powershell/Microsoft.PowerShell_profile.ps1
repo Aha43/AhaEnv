@@ -52,6 +52,7 @@ function help {
     Write-Host "    git-help:                       Show git functions"
     Write-Host "    fs-help:                        Show file system functions"
     Write-Host "    ut-help:                        Show utility functions"
+    Write-Host "    ji-help:                        Show Jira functions"
     Write-Host
 }
 
