@@ -2,6 +2,7 @@
 function ut-help {
     Write-Host
     Write-Host "Utility functions:"
+    Write-Host "    envs:                           List all environment variables"
     Write-Host "    ut-help:                        Show this help"
     Write-Host "    week:                           Get the current week number"
     Write-Host "    title <title>:                  Set the terminal title"
@@ -12,6 +13,11 @@ function ut-help {
 }
 
 function week { get-date -UFormat %V }
+
+#list all environment variables sorted by name
+function envs {
+    Get-ChildItem Env: | Sort-Object Name
+}
 
 function title {
     if ($args.Length -eq 0) {
