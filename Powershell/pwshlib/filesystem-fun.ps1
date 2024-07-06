@@ -6,7 +6,7 @@ function fs-help {
     Write-Host "    findf:                          Find files by name in the current directory and its subdirectories"
     Write-Host "    mcd:                            Create a directory and change to it"
     Write-Host "    killdir:                        Remove a directory recursively using force"
-    Write-Host "    go:                             Change to a directory and set the title of the terminal to the directory name"
+    Write-Host "    goto:                           Change to a directory and set the title of the terminal to the directory name"
     Write-Host "    dtitle:                         Set the title of the terminal to the current directory"
     Write-Host "    crf:                            Create a file if it does not exist"
     Write-Host
@@ -44,7 +44,7 @@ function killdir {
 }
 
 # Change to a directory and update the title bar
-function go {
+function goto {
     if ($args.Length -eq 0) {
         Write-Host "Usage: go <directory name>"
     } else {

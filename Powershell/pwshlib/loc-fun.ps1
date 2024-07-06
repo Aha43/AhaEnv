@@ -84,6 +84,7 @@ function goto-location {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
         $path = Get-Content -Path $locFile
         Set-Location -Path $path
+        $host.UI.RawUI.WindowTitle = $name
     }
     else {
         Write-Host "Location does not exist"
