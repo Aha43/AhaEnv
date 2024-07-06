@@ -87,7 +87,7 @@ function add-location {
         $description | Out-File -FilePath $descFile   
     }
     else {
-        Write-Host "Location named $name already added" -ForegroundColor Red
+        Write-Host "Location named '$name' already added" -ForegroundColor Red
     }
 }
 
@@ -104,11 +104,17 @@ function rename-location {
     $locationsDir = get-location-directory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $newLocationDir = Join-Path -Path $locationsDir -ChildPath $newName
+
+    if (Test-Path -Path $newLocationDir) {
+        Write-Host "Location named '$newName' to rename to already exists" -ForegroundColor Red
+        return
+    }
+
     if (Test-Path -Path $locationDir) {
         Move-Item -Path $locationDir -Destination $newLocationDir
     }
     else {
-        Write-Host "Location does not exist" -ForegroundColor Red
+        Write-Host "Location to rename '$name' does not exist" -ForegroundColor Red
     }
 }
 
@@ -143,7 +149,7 @@ function remove-location {
         Remove-Item -Path $locationDir -Recurse
     }
     else {
-        Write-Host "Location does not exist" -ForegroundColor Red
+        Write-Host "Location '$name' does not exist" -ForegroundColor Red
     }
 }
 
@@ -338,10 +344,10 @@ function loc {
             loc-where-help
         }
         else {
-            Write-Host "Invalid sub-action $subAction" -ForegroundColor Red
+            Write-Host "Invalid sub-action '$subAction'" -ForegroundColor Red
         }
     }
     else {
-        Write-Host "Invalid action $action" -ForegroundColor Red
+        Write-Host "Invalid action '$action'" -ForegroundColor Red
     }
 }
