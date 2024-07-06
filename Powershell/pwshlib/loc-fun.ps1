@@ -7,11 +7,75 @@ function get-location-directory {
     return $retVal
 }
 
+function Is-ValidLocationName {
+    param (
+        [string]$identifier
+    )
+
+    $regex = '^[a-zA-Z_][a-zA-Z0-9_]*$'
+    
+    if ($identifier -match $regex) {
+        return $true
+    } else {
+        return $false
+    }
+}
+
+function Convert-ToUnsignedInt {
+    param (
+        [string]$inputString
+    )
+
+    # Try to convert the input string to an integer
+    [int]$number = 0
+    if (-not [int]::TryParse($inputString, [ref]$number)) {
+        return -1
+    }
+
+    # Check if the number is negative
+    if ($number -lt 0) {
+        return -1
+    }
+
+    return [uint32]$number
+}
+
+function get-location-count {
+    $locationsDir = get-location-directory
+    $locations = Get-ChildItem -Path $locationsDir
+    return $locations.Length
+}
+
+function get-location-name-at-position {
+    param (
+        [int]$position
+    )
+
+    $locationsDir = get-location-directory
+    $locations = Get-ChildItem -Path $locationsDir
+    $retVal = $null
+    if ($locations.Length -gt 0) {
+        $index = 0
+        $locations | ForEach-Object {
+            if ($index -eq $position) {
+                $retVal = $_.Name
+            }
+            $index++
+        }
+    }
+    return $retVal
+}
+
 function add-location {
     param(
         [string]$name,
         [string]$description
     )
+    if (-not (Is-ValidLocationName -identifier $name)) {
+        Write-Host "Invalid location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
+        return
+    }
+
     $path = (get-location).Path 
     $locationsDir = get-location-directory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
@@ -23,7 +87,7 @@ function add-location {
         $description | Out-File -FilePath $descFile   
     }
     else {
-        Write-Host "Location named $name already added"
+        Write-Host "Location named $name already added" -ForegroundColor Red
     }
 }
 
@@ -32,6 +96,11 @@ function rename-location {
         [string]$name,
         [string]$newName
     )
+    if (-not (Is-ValidLocationName -identifier $newName)) {
+        Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
+        return
+    }
+
     $locationsDir = get-location-directory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $newLocationDir = Join-Path -Path $locationsDir -ChildPath $newName
@@ -39,13 +108,14 @@ function rename-location {
         Move-Item -Path $locationDir -Destination $newLocationDir
     }
     else {
-        Write-Host "Location does not exist"
+        Write-Host "Location does not exist" -ForegroundColor Red
     }
 }
 
 function list-locations {
     $locationsDir = get-location-directory
     $locations = Get-ChildItem -Path $locationsDir
+    [int]$pos = 0
     Write-Host
     $locations | ForEach-Object {
         $name = $_.Name
@@ -53,9 +123,12 @@ function list-locations {
         $description = Get-Content -Path $descFile
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
         $path = Get-Content -Path $pathFile
-        Write-Host "$name" -NoNewline -ForegroundColor Red
+        Write-Host "$pos" -NoNewline -ForegroundColor Yellow
+        Write-Host " - $name" -NoNewline -ForegroundColor Red
         Write-Host " - $description" -NoNewline -ForegroundColor Green
         Write-Host " - $path" -ForegroundColor Cyan
+
+        $pos++
     }
     Write-Host
 }
@@ -70,7 +143,7 @@ function remove-location {
         Remove-Item -Path $locationDir -Recurse
     }
     else {
-        Write-Host "Location does not exist"
+        Write-Host "Location does not exist" -ForegroundColor Red
     }
 }
 
@@ -78,6 +151,17 @@ function goto-location {
     param(
         [string]$name
     )
+    $pos = Convert-ToUnsignedInt -inputString $name
+    if ($pos -gt -1) {
+        $count = get-location-count
+        if ($pos -ge $count) {
+            Write-Host "Location '$name' does not exist" -ForegroundColor Red
+            return
+        }
+
+        $name = get-location-name-at-position -position $pos    
+    }
+
     $locationsDir = get-location-directory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
@@ -87,7 +171,7 @@ function goto-location {
         $host.UI.RawUI.WindowTitle = $name
     }
     else {
-        Write-Host "Location does not exist"
+        Write-Host "Location '$name' does not exist" -ForegroundColor Red
     }
 }
 
@@ -151,8 +235,8 @@ function loc-remove-help {
 
 function loc-goto-help {
     Write-Host
-    Write-Host "Usage: loc goto <name>" -ForegroundColor Green
-    Write-Host "Go to the location with the given name" -ForegroundColor Green
+    Write-Host "Usage: loc goto <name | pos>" -ForegroundColor Green
+    Write-Host "Go to the location with the given name (or position in location list)" -ForegroundColor Green
     Write-Host
 }
 
