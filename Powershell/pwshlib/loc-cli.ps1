@@ -118,6 +118,22 @@ function rename-location {
     }
 }
 
+function edit-description {
+    param(
+        [string]$name,
+        [string]$description
+    )
+    $locationsDir = get-location-directory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    if (Test-Path -Path $locationDir) {
+        $descFile = Join-Path -Path $locationDir -ChildPath "description.txt"
+        $description | Out-File -FilePath $descFile
+    }
+    else {
+        Write-Host "Location '$name' does not exist" -ForegroundColor Red
+    }
+}
+
 function list-locations {
     $locationsDir = get-location-directory
     $locations = Get-ChildItem -Path $locationsDir
@@ -224,6 +240,13 @@ function loc-rename-help {
     Write-Host
 }
 
+function loc-edit-help {
+    Write-Host
+    Write-Host "Usage: loc edit <name> <description>" -ForegroundColor Green
+    Write-Host "Edit the description of a location with the given name" -ForegroundColor Green
+    Write-Host
+}
+
 function loc-list-help {
     Write-Host
     Write-Host "Usage: loc list" -ForegroundColor Green
@@ -257,7 +280,7 @@ function loc-help {
     Write-Host "loc - Location management and navigation" -ForegroundColor Green
     Write-Host 
     Write-Host "Usage: loc <action> ..." -ForegroundColor Green
-    Write-Host "Actions: add, rename, list, remove, goto, where" -ForegroundColor Green
+    Write-Host "Actions: add, rename, edit, list, remove, goto, where" -ForegroundColor Green
     Write-Host
     Write-Host "Use 'loc help <action>' for more information on a specific action" -ForegroundColor Green
     Write-Host
@@ -267,7 +290,7 @@ function loc-help {
 function loc {
     if ($args.Length -lt 1) {
         Write-Host "Usage: loc <action> ..." -ForegroundColor Red
-        Write-Host "Actions: add, rename, list, remove, goto, where" -ForegroundColor Red
+        Write-Host "Actions: add, rename, edit, list, remove, goto, where" -ForegroundColor Red
         return
     }
 
@@ -292,6 +315,16 @@ function loc {
         $name = $args[1]
         $newName = $args[2]
         rename-location -name $name -newName $newName
+    }
+    elseif ($action -eq "edit") {
+        if ($args.Length -lt 3) {
+            Write-Host "Usage: loc edit <name> <description>" -ForegroundColor Red
+            return
+        }
+
+        $name = $args[1]
+        $description = $args[2]
+        edit-description -name $name -description $description
     }
     elseif ($action -eq "list") {
         list-locations
@@ -329,6 +362,9 @@ function loc {
         }
         elseif ($subAction -eq "rename") {
             loc-rename-help
+        }
+        elseif ($subAction -eq "edit") {
+            loc-edit-help
         }
         elseif ($subAction -eq "list") {
             loc-list-help
