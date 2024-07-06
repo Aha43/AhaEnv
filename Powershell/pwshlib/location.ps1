@@ -64,9 +64,11 @@ function Add-LocationMetadata {
     }
 
     # Convert the updated locations back to JSON
+    Write-Host "Generate new jsons"
     $updatedJsonContent = $locations | ConvertTo-Json
 
     # Save the updated JSON content back to the file
+    Write-Host "Update file: $jsonFilePath"
     $updatedJsonContent | Set-Content -Path $jsonFilePath
 
     Write-Output "Added new location metadata for '$name' at path '$currentPath'."
