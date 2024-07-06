@@ -91,6 +91,36 @@ function goto-location {
     }
 }
 
+function loc-where-am-i {
+    $locationsDir = get-location-directory
+    $locations = Get-ChildItem -Path $locationsDir
+    $path = (get-location).Path
+    [bool]$found = $false
+    if ($locations.Length -gt 0) {
+        $locations | ForEach-Object {
+            $name = $_.Name
+            $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
+            $locPath = Get-Content -Path $pathFile
+            if ($path -eq $locPath) {
+                $descFile = Join-Path -Path $_.FullName -ChildPath "description.txt"
+                $description = Get-Content -Path $descFile
+                Write-Host
+                Write-Host "Where: You are at location '$name'" -ForegroundColor Green
+                Write-Host "What: $description" -ForegroundColor Cyan
+                Write-Host
+                $found = $true
+            }
+        }
+    }
+    
+    if (-not $found) {
+        Write-Host
+        Write-Host "You are not at any registered location" -ForegroundColor Red
+        Write-Host "Use 'loc add <name> <description>' to add current working direction as a location" -ForegroundColor Green
+        Write-Host
+    }
+}
+
 function loc-add-help {
     Write-Host
     Write-Host "Usage: loc add <name> <description>" -ForegroundColor Green
@@ -126,12 +156,19 @@ function loc-goto-help {
     Write-Host
 }
 
+function loc-where-help {
+    Write-Host
+    Write-Host "Usage: loc where" -ForegroundColor Green
+    Write-Host "Show the location you are currently at" -ForegroundColor Green
+    Write-Host
+}
+
 function loc-help {
     Write-Host
     Write-Host "loc - Location management and navigation" -ForegroundColor Green
     Write-Host 
     Write-Host "Usage: loc <action> ..." -ForegroundColor Green
-    Write-Host "Actions: add, rename, list, remove, goto" -ForegroundColor Green
+    Write-Host "Actions: add, rename, list, remove, goto, where" -ForegroundColor Green
     Write-Host
     Write-Host "Use 'loc help <action>' for more information on a specific action" -ForegroundColor Green
     Write-Host
@@ -140,8 +177,8 @@ function loc-help {
 # cli
 function loc {
     if ($args.Length -lt 1) {
-        Write-Host "Usage: loc <action> [name] [description]" -ForegroundColor Red
-        Write-Host "Actions: add, rename, list, remove, goto" -ForegroundColor Red
+        Write-Host "Usage: loc <action> ..." -ForegroundColor Red
+        Write-Host "Actions: add, rename, list, remove, goto, where" -ForegroundColor Red
         return
     }
 
@@ -188,6 +225,9 @@ function loc {
         $name = $args[1]
         goto-location -name $name
     }
+    elseif ($action -eq "where") {
+        loc-where-am-i
+    }
     elseif ($action -eq "help") {
         if ($args.Length -lt 2) {
             loc-help
@@ -209,6 +249,9 @@ function loc {
         }
         elseif ($subAction -eq "goto") {
             loc-goto-help
+        }
+        elseif ($subAction -eq "where") {
+            loc-where-help
         }
         else {
             Write-Host "Invalid sub-action $subAction" -ForegroundColor Red
