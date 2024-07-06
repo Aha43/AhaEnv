@@ -7,7 +7,7 @@ function get-location-directory {
     return $retVal
 }
 
-function Is-ValidLocationName {
+function is-valid-locationName {
     param (
         [string]$identifier
     )
@@ -71,7 +71,7 @@ function add-location {
         [string]$name,
         [string]$description
     )
-    if (-not (Is-ValidLocationName -identifier $name)) {
+    if (-not (is-valid-locationName -identifier $name)) {
         Write-Host "Invalid location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
     }
@@ -96,7 +96,7 @@ function rename-location {
         [string]$name,
         [string]$newName
     )
-    if (-not (Is-ValidLocationName -identifier $newName)) {
+    if (-not (is-valid-locationName -identifier $newName)) {
         Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
     }
@@ -130,10 +130,9 @@ function list-locations {
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
         $path = Get-Content -Path $pathFile
         Write-Host "$pos" -NoNewline -ForegroundColor Yellow
-        Write-Host " - $name" -NoNewline -ForegroundColor Red
+        Write-Host " - $name" -NoNewline -ForegroundColor Cyan
         Write-Host " - $description" -NoNewline -ForegroundColor Green
         Write-Host " - $path" -ForegroundColor Cyan
-
         $pos++
     }
     Write-Host
