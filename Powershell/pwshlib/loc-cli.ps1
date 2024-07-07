@@ -336,12 +336,28 @@ function loc-where-help {
     Write-Host
 }
 
-function loc-help {
+function Get-LocCliActions {
+    $commands = @(
+        "add",
+        "rename",
+        "edit",
+        "list",
+        "remove",
+        "remove-this",
+        "wash",
+        "goto",
+        "where"
+    )
+    return $commands
+}
+
+function loc-cli-help {
+    $actions = (Get-LocCliActions) -join ", "
     Write-Host
-    Write-Host "loc - Location management and navigation" -ForegroundColor Green
+    Write-Host "loc - A location management and navigation command line interface" -ForegroundColor Green
     Write-Host 
     Write-Host "Usage: loc <action> ..." -ForegroundColor Green
-    Write-Host "Actions: add, rename, edit, list, remove, goto, where" -ForegroundColor Green
+    Write-Host "Actions: $actions" -ForegroundColor Green
     Write-Host
     Write-Host "Use 'loc help <action>' for more information on a specific action" -ForegroundColor Green
     Write-Host
@@ -350,8 +366,10 @@ function loc-help {
 # cli
 function Loc {
     if ($args.Length -lt 1) {
+        Write-Host
         Write-Host "Usage: loc <action> ..." -ForegroundColor Red
-        Write-Host "Actions: add, rename, edit, list, remove, remove-this, wash, goto, where" -ForegroundColor Red
+        Write-Host "For more help: loc help" -ForegroundColor Red
+        Write-Host
         return
     }
 
@@ -419,7 +437,7 @@ function Loc {
     }
     elseif ($action -eq "help") {
         if ($args.Length -lt 2) {
-            loc-help
+            loc-cli-help
             return
         }
 
