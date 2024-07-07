@@ -1,5 +1,12 @@
 
-function get-location-directory {
+<#
+.SYNOPSIS
+Gets the directory where location information is stored
+
+.DESCRIPTION
+Gets the directory where location information is stored by joining the home directory with the .locations directory
+#>
+function Get-LocationDirectory {
     $retVal = Join-Path -Path $HOME -ChildPath ".locations"
     if (-not (Test-Path -Path $retVal)) {
         New-Item -Path $retVal -ItemType Directory
@@ -41,7 +48,7 @@ function Convert-ToUnsignedInt {
 }
 
 function get-location-count {
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     return $locations.Length
 }
@@ -51,7 +58,7 @@ function get-location-name-at-position {
         [int]$position
     )
 
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $retVal = $null
     if ($locations.Length -gt 0) {
@@ -77,7 +84,7 @@ function Add-Location {
     }
 
     $path = (get-location).Path 
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (-not (Test-Path -Path $locationDir)) {
         [void](New-Item -Path $locationDir -ItemType Directory)
@@ -101,7 +108,7 @@ function rename-location {
         return
     }
 
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $newLocationDir = Join-Path -Path $locationsDir -ChildPath $newName
 
@@ -123,7 +130,7 @@ function edit-description {
         [string]$name,
         [string]$description
     )
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $descFile = Join-Path -Path $locationDir -ChildPath "description.txt"
@@ -135,7 +142,7 @@ function edit-description {
 }
 
 function do-location-exist([string]$name) {
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
     $path = Get-Content -Path $pathFile
@@ -143,7 +150,7 @@ function do-location-exist([string]$name) {
 }
 
 function list-locations {
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     [int]$pos = 0
     Write-Host
@@ -172,7 +179,7 @@ function list-locations {
 }
 
 function wash-locations {
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $locations | ForEach-Object {
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
@@ -187,7 +194,7 @@ function remove-location {
     param(
         [string]$name
     )
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         Remove-Item -Path $locationDir -Recurse
@@ -199,7 +206,7 @@ function remove-location {
 
 function remove-this-location {
     $path = (get-location).Path
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $locations | ForEach-Object {
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
@@ -225,7 +232,7 @@ function goto-location {
         $name = get-location-name-at-position -position $pos    
     }
 
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
@@ -243,7 +250,7 @@ function goto-location {
 }
 
 function loc-where-am-i {
-    $locationsDir = get-location-directory
+    $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $path = (get-location).Path
     [bool]$found = $false
