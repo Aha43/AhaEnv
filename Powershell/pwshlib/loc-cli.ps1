@@ -197,6 +197,19 @@ function remove-location {
     }
 }
 
+function remove-this-location {
+    $path = (get-location).Path
+    $locationsDir = get-location-directory
+    $locations = Get-ChildItem -Path $locationsDir
+    $locations | ForEach-Object {
+        $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
+        $locPath = Get-Content -Path $pathFile
+        if ($path -eq $locPath) {
+            Remove-Item -Path $_.FullName -Recurse
+        }
+    }
+}
+
 function goto-location {
     param(
         [string]$name
@@ -294,6 +307,13 @@ function loc-remove-help {
     Write-Host
 }
 
+function loc-remove-this-help {
+    Write-Host
+    Write-Host "Usage: loc remove-this" -ForegroundColor Green
+    Write-Host "Remove the location you are currently at (do not worry the physical directory not deleted)" -ForegroundColor Green
+    Write-Host
+}
+
 function loc-wash-help {
     Write-Host
     Write-Host "Usage: loc wash" -ForegroundColor Green
@@ -328,10 +348,10 @@ function loc-help {
 }
 
 # cli
-function loc {
+function Loc {
     if ($args.Length -lt 1) {
         Write-Host "Usage: loc <action> ..." -ForegroundColor Red
-        Write-Host "Actions: add, rename, edit, list, remove, wash, goto, where" -ForegroundColor Red
+        Write-Host "Actions: add, rename, edit, list, remove, remove-this, wash, goto, where" -ForegroundColor Red
         return
     }
 
@@ -379,6 +399,9 @@ function loc {
         $name = $args[1]
         remove-location -name $name
     }
+    elseif ($action -eq "remove-this") {
+        remove-this-location
+    }
     elseif ($action -eq "wash") {
         wash-locations
     }
@@ -415,6 +438,9 @@ function loc {
         }
         elseif ($subAction -eq "remove") {
             loc-remove-help
+        }
+        elseif ($subAction -eq "remove-this") {
+            loc-remove-this-help
         }
         elseif ($subAction -eq "wash") {
             loc-wash-help
