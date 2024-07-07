@@ -279,28 +279,28 @@ function loc-where-am-i {
     }
 }
 
-function loc-add-help {
+function Get-LocAddHelp {
     Write-Host
     Write-Host "Usage: loc add <name> <description>" -ForegroundColor Green
     Write-Host "Add the current working directory as a location with the given name and description" -ForegroundColor Green
     Write-Host
 }
 
-function loc-rename-help {
+function Get-LocRenameHelp {
     Write-Host
     Write-Host "Usage: loc rename <name> <new-name>" -ForegroundColor Green
     Write-Host "Rename a location with the given name to the new name" -ForegroundColor Green
     Write-Host
 }
 
-function loc-edit-help {
+function Get-LocEditHelp {
     Write-Host
     Write-Host "Usage: loc edit <name> <description>" -ForegroundColor Green
     Write-Host "Edit the description of a location with the given name" -ForegroundColor Green
     Write-Host
 }
 
-function loc-list-help {
+function Get-LocListHelp {
     Write-Host
     Write-Host "Usage: loc list" -ForegroundColor Green
     Write-Host "List all locations" -ForegroundColor Green
@@ -308,28 +308,28 @@ function loc-list-help {
     Write-Host
 }
 
-function loc-remove-help {
+function Get-LocRemoveHelp {
     Write-Host
     Write-Host "Usage: loc remove <name>" -ForegroundColor Green
     Write-Host "Remove a location with the given name" -ForegroundColor Green
     Write-Host
 }
 
-function loc-remove-this-help {
+function Get-LocRemoveThisHelp {
     Write-Host
     Write-Host "Usage: loc remove-this" -ForegroundColor Green
     Write-Host "Remove the location you are currently at (do not worry the physical directory not deleted)" -ForegroundColor Green
     Write-Host
 }
 
-function loc-wash-help {
+function Get-LocWashHelp {
     Write-Host
     Write-Host "Usage: loc wash" -ForegroundColor Green
     Write-Host "Remove locations that do not physically exist" -ForegroundColor Green
     Write-Host
 }
 
-function loc-goto-help {
+function Get-LocGotoHelp {
     Write-Host
     Write-Host "Usage: loc goto <name | pos>" -ForegroundColor Green
     Write-Host "Go to the location with the given name (or position in location list)" -ForegroundColor Green
@@ -337,7 +337,7 @@ function loc-goto-help {
     Write-Host
 }
 
-function loc-where-help {
+function Get-LocWhereHelp {
     Write-Host
     Write-Host "Usage: loc where" -ForegroundColor Green
     Write-Host "Show the location you are currently at" -ForegroundColor Green
@@ -451,31 +451,31 @@ function Loc {
 
         $subAction = $args[1]
         if ($subAction -eq "add") {
-            loc-add-help
+            Get-LocAddHelp
         }
         elseif ($subAction -eq "rename") {
-            loc-rename-help
+            Get-LocRenameHelp
         }
         elseif ($subAction -eq "edit") {
-            loc-edit-help
+            Get-LocEditHelp
         }
         elseif ($subAction -eq "list") {
-            loc-list-help
+            Get-LocListHelp
         }
         elseif ($subAction -eq "remove") {
-            loc-remove-help
+            Get-LocRemoveHelp
         }
         elseif ($subAction -eq "remove-this") {
-            loc-remove-this-help
+            Get-LocRemoveThisHelp
         }
         elseif ($subAction -eq "wash") {
-            loc-wash-help
+            Get-LocWashHelp
         }
         elseif ($subAction -eq "goto") {
-            loc-goto-help
+            Get-LocGotoHelp
         }
         elseif ($subAction -eq "where") {
-            loc-where-help
+            Get-LocWhereHelp
         }
         else {
             Write-Host
