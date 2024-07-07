@@ -304,6 +304,7 @@ function loc-list-help {
     Write-Host
     Write-Host "Usage: loc list" -ForegroundColor Green
     Write-Host "List all locations" -ForegroundColor Green
+    Write-Host "You can also use 'loc ls' or 'loc l' to list all locations" -ForegroundColor Green
     Write-Host
 }
 
@@ -412,7 +413,7 @@ function Loc {
         $description = $args[2]
         edit-description -name $name -description $description
     }
-    elseif ($action -eq "list") {
+    elseif ($action -eq "list" -or $action -eq "ls" -or $action -eq "l") {
         list-locations
     }
     elseif ($action -eq "remove") {
