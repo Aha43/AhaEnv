@@ -470,10 +470,16 @@ function Loc {
             loc-where-help
         }
         else {
+            Write-Host
             Write-Host "Invalid sub-action '$subAction'" -ForegroundColor Red
+            Write-Host "For more help: loc help" -ForegroundColor Red
+            Write-Host
         }
     }
     else {
+        Write-Host
         Write-Host "Invalid action '$action'" -ForegroundColor Red
+        Write-Host "For more help: loc help" -ForegroundColor Red
+        Write-Host
     }
 }
