@@ -249,7 +249,7 @@ function goto-location {
     }
 }
 
-function loc-where-am-i {
+function Get-LocationWhereIAm {
     $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $path = (get-location).Path
@@ -441,7 +441,7 @@ function Loc {
         goto-location -name $name
     }
     elseif ($action -eq "where") {
-        loc-where-am-i
+        Get-LocationWhereIAm
     }
     elseif ($action -eq "help") {
         if ($args.Length -lt 2) {
