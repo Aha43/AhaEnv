@@ -47,7 +47,7 @@ function Convert-ToUnsignedInt {
     return [uint32]$number
 }
 
-function get-location-count {
+function Get-LocationCount {
     $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     return $locations.Length
@@ -223,7 +223,7 @@ function goto-location {
     )
     $pos = Convert-ToUnsignedInt -inputString $name
     if ($pos -gt -1) {
-        $count = get-location-count
+        $count = Get-LocationCount
         if ($pos -ge $count) {
             Write-Host "Location '$name' does not exist" -ForegroundColor Red
             return
