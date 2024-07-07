@@ -53,7 +53,7 @@ function Get-LocationCount {
     return $locations.Length
 }
 
-function get-location-name-at-position {
+function Get-LocationNameAtPosition {
     param (
         [int]$position
     )
@@ -229,7 +229,7 @@ function goto-location {
             return
         }
 
-        $name = get-location-name-at-position -position $pos    
+        $name = Get-LocationNameAtPosition -position $pos    
     }
 
     $locationsDir = Get-LocationDirectory
