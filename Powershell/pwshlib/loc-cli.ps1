@@ -80,7 +80,7 @@ function add-location {
     $locationsDir = get-location-directory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (-not (Test-Path -Path $locationDir)) {
-        New-Item -Path $locationDir -ItemType Directory
+        [void](New-Item -Path $locationDir -ItemType Directory)
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
         $path | Out-File -FilePath $locFile
         $descFile = Join-Path -Path $locationDir -ChildPath "description.txt"
