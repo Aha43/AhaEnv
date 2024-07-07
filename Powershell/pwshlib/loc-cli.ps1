@@ -205,6 +205,10 @@ function goto-location {
     if (Test-Path -Path $locationDir) {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
         $path = Get-Content -Path $locFile
+        if (-not (Test-Path -Path $path)) {
+            Write-Host "Location '$name' does not physical exist ('$path' probably deleted)" -ForegroundColor Red
+            return
+        }
         Set-Location -Path $path
         $host.UI.RawUI.WindowTitle = $name
     }
