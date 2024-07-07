@@ -134,6 +134,14 @@ function edit-description {
     }
 }
 
+function do-location-exist([string]$name) {
+    $locationsDir = get-location-directory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
+    $path = Get-Content -Path $pathFile
+    return (Test-Path -Path $path)
+}
+
 function list-locations {
     $locationsDir = get-location-directory
     $locations = Get-ChildItem -Path $locationsDir
@@ -141,14 +149,23 @@ function list-locations {
     Write-Host
     $locations | ForEach-Object {
         $name = $_.Name
+        [bool]$exist = do-location-exist -name $name
         $descFile = Join-Path -Path $_.FullName -ChildPath "description.txt"
         $description = Get-Content -Path $descFile
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
         $path = Get-Content -Path $pathFile
-        Write-Host "$pos" -NoNewline -ForegroundColor Yellow
-        Write-Host " - $name" -NoNewline -ForegroundColor Cyan
-        Write-Host " - $description" -NoNewline -ForegroundColor Green
-        Write-Host " - $path" -ForegroundColor Cyan
+        if (-not $exist) {
+            Write-Host "$pos" -NoNewline -ForegroundColor Red
+            Write-Host " - $name" -NoNewline -ForegroundColor Red
+            Write-Host " - $description" -NoNewline -ForegroundColor Red
+            Write-Host " - $path" -ForegroundColor Red
+        }
+        else {
+            Write-Host "$pos" -NoNewline -ForegroundColor Yellow
+            Write-Host " - $name" -NoNewline -ForegroundColor Cyan
+            Write-Host " - $description" -NoNewline -ForegroundColor Green
+            Write-Host " - $path" -ForegroundColor Cyan
+        }
         $pos++
     }
     Write-Host
