@@ -14,7 +14,7 @@ function Get-LocationDirectory {
     return $retVal
 }
 
-function is-valid-locationName {
+function Test-ValidLocationName {
     param (
         [string]$identifier
     )
@@ -78,7 +78,7 @@ function Add-Location {
         [string]$name,
         [string]$description
     )
-    if (-not (is-valid-locationName -identifier $name)) {
+    if (-not (Test-ValidLocationName -identifier $name)) {
         Write-Host "Invalid location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
     }
@@ -103,7 +103,7 @@ function rename-location {
         [string]$name,
         [string]$newName
     )
-    if (-not (is-valid-locationName -identifier $newName)) {
+    if (-not (Test-ValidLocationName -identifier $newName)) {
         Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
     }
