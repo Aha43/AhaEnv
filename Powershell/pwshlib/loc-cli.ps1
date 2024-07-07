@@ -66,7 +66,7 @@ function get-location-name-at-position {
     return $retVal
 }
 
-function add-location {
+function Add-Location {
     param(
         [string]$name,
         [string]$description
@@ -345,7 +345,7 @@ function loc {
 
         $name = $args[1]
         $description = $args[2]
-        add-location -name $name -description $description
+        Add-Location -name $name -description $description
     }
     elseif ($action -eq "rename") {
         if ($args.Length -lt 3) {
