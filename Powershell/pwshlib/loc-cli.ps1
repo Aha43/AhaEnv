@@ -171,6 +171,18 @@ function list-locations {
     Write-Host
 }
 
+function wash-locations {
+    $locationsDir = get-location-directory
+    $locations = Get-ChildItem -Path $locationsDir
+    $locations | ForEach-Object {
+        $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
+        $path = Get-Content -Path $pathFile
+        if (-not (Test-Path -Path $path)) {
+            Remove-Item -Path $_.FullName -Recurse
+        }
+    }
+}
+
 function remove-location {
     param(
         [string]$name
@@ -282,10 +294,18 @@ function loc-remove-help {
     Write-Host
 }
 
+function loc-wash-help {
+    Write-Host
+    Write-Host "Usage: loc wash" -ForegroundColor Green
+    Write-Host "Remove locations that do not physically exist" -ForegroundColor Green
+    Write-Host
+}
+
 function loc-goto-help {
     Write-Host
     Write-Host "Usage: loc goto <name | pos>" -ForegroundColor Green
     Write-Host "Go to the location with the given name (or position in location list)" -ForegroundColor Green
+    Write-Host "You can also use 'loc go <name | pos>' to go to a location" -ForegroundColor Green
     Write-Host
 }
 
@@ -311,7 +331,7 @@ function loc-help {
 function loc {
     if ($args.Length -lt 1) {
         Write-Host "Usage: loc <action> ..." -ForegroundColor Red
-        Write-Host "Actions: add, rename, edit, list, remove, goto, where" -ForegroundColor Red
+        Write-Host "Actions: add, rename, edit, list, remove, wash, goto, where" -ForegroundColor Red
         return
     }
 
@@ -359,7 +379,10 @@ function loc {
         $name = $args[1]
         remove-location -name $name
     }
-    elseif ($action -eq "goto") {
+    elseif ($action -eq "wash") {
+        wash-locations
+    }
+    elseif ($action -eq "goto" -or $action -eq "go") {
         if ($args.Length -lt 2) {
             Write-Host "Usage: loc goto <name>" -ForegroundColor Red
             return
@@ -392,6 +415,9 @@ function loc {
         }
         elseif ($subAction -eq "remove") {
             loc-remove-help
+        }
+        elseif ($subAction -eq "wash") {
+            loc-wash-help
         }
         elseif ($subAction -eq "goto") {
             loc-goto-help
