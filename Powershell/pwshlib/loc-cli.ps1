@@ -1,11 +1,4 @@
 
-<#
-.SYNOPSIS
-Gets the directory where location information is stored
-
-.DESCRIPTION
-Gets the directory where location information is stored by joining the home directory with the .locations directory
-#>
 function Get-LocationDirectory {
     $retVal = Join-Path -Path $HOME -ChildPath ".locations"
     if (-not (Test-Path -Path $retVal)) {
@@ -98,7 +91,7 @@ function Add-Location {
     }
 }
 
-function update-location-path {
+function Update-LocationPath {
     param(
         [string]$name
     )
@@ -114,7 +107,7 @@ function update-location-path {
     }
 }
 
-function rename-location {
+function Rename-Location {
     param(
         [string]$name,
         [string]$newName
@@ -141,7 +134,7 @@ function rename-location {
     }
 }
 
-function edit-description {
+function Edit-Description {
     param(
         [string]$name,
         [string]$description
@@ -157,7 +150,7 @@ function edit-description {
     }
 }
 
-function do-location-exist([string]$name) {
+function Test-Location([string]$name) {
     $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
@@ -165,14 +158,14 @@ function do-location-exist([string]$name) {
     return (Test-Path -Path $path)
 }
 
-function list-locations {
+function Show-Locations {
     $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     [int]$pos = 0
     Write-Host
     $locations | ForEach-Object {
         $name = $_.Name
-        [bool]$exist = do-location-exist -name $name
+        [bool]$exist = Test-location -name $name
         $descFile = Join-Path -Path $_.FullName -ChildPath "description.txt"
         $description = Get-Content -Path $descFile
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
@@ -206,7 +199,7 @@ function Repair-Locations {
     }
 }
 
-function remove-location {
+function Remove-Location {
     param(
         [string]$name
     )
@@ -425,7 +418,7 @@ function Loc {
         }
 
         $name = $args[1]
-        update-location-path -name $name
+        Update-LocationPath -name $name
     }
     elseif ($action -eq "rename") {
         if ($args.Length -lt 3) {
@@ -435,7 +428,7 @@ function Loc {
 
         $name = $args[1]
         $newName = $args[2]
-        rename-location -name $name -newName $newName
+        Rename-Location -name $name -newName $newName
     }
     elseif ($action -eq "edit") {
         if ($args.Length -lt 3) {
@@ -448,7 +441,7 @@ function Loc {
         edit-description -name $name -description $description
     }
     elseif ($action -eq "list" -or $action -eq "ls" -or $action -eq "l") {
-        list-locations
+        Show-Locations
     }
     elseif ($action -eq "remove") {
         if ($args.Length -lt 2) {
