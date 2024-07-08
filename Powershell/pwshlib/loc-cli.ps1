@@ -384,7 +384,7 @@ function Get-LocCliActions {
     return $commands
 }
 
-function loc-cli-help {
+function Get-LocCliHelp {
     $actions = (Get-LocCliActions) -join ", "
     Write-Host
     Write-Host "loc - A location management and navigation command line interface" -ForegroundColor Green
@@ -479,7 +479,7 @@ function Loc {
     }
     elseif ($action -eq "help") {
         if ($args.Length -lt 2) {
-            loc-cli-help
+            Get-LocCliHelp
             return
         }
 
