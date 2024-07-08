@@ -194,7 +194,7 @@ function list-locations {
     Write-Host
 }
 
-function wash-locations {
+function Repair-Locations {
     $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $locations | ForEach-Object {
@@ -345,9 +345,9 @@ function Get-LocRemoveThisHelp {
     Write-Host
 }
 
-function Get-LocWashHelp {
+function Get-LocRepairHelp {
     Write-Host
-    Write-Host "Usage: loc wash" -ForegroundColor Green
+    Write-Host "Usage: loc repair" -ForegroundColor Green
     Write-Host "Remove locations that do not physically exist" -ForegroundColor Green
     Write-Host
 }
@@ -377,7 +377,7 @@ function Get-LocCliActions {
         "list",
         "remove",
         "remove-this",
-        "wash",
+        "repair",
         "goto",
         "where"
     )
@@ -462,8 +462,8 @@ function Loc {
     elseif ($action -eq "remove-this") {
         Remove-ThisLocation
     }
-    elseif ($action -eq "wash") {
-        wash-locations
+    elseif ($action -eq "repair") {
+        Repair-Locations
     }
     elseif ($action -eq "goto" -or $action -eq "go") {
         if ($args.Length -lt 2) {
@@ -505,8 +505,8 @@ function Loc {
         elseif ($subAction -eq "remove-this") {
             Get-LocRemoveThisHelp
         }
-        elseif ($subAction -eq "wash") {
-            Get-LocWashHelp
+        elseif ($subAction -eq "repair") {
+            Get-LocRepairHelp
         }
         elseif ($subAction -eq "goto") {
             Get-LocGotoHelp
