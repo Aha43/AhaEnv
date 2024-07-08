@@ -457,7 +457,7 @@ function Loc {
         }
 
         $name = $args[1]
-        remove-location -name $name
+        Remove-Location -name $name
     }
     elseif ($action -eq "remove-this") {
         Remove-ThisLocation
