@@ -98,6 +98,22 @@ function Add-Location {
     }
 }
 
+function update-location-path {
+    param(
+        [string]$name
+    )
+    $locationsDir = Get-LocationDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    if (Test-Path -Path $locationDir) {
+        $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
+        $path = (get-location).Path
+        $path | Out-File -FilePath $locFile
+    }
+    else {
+        Write-Host "Location '$name' does not exist" -ForegroundColor Red
+    }
+}
+
 function rename-location {
     param(
         [string]$name,
@@ -286,6 +302,13 @@ function Get-LocAddHelp {
     Write-Host
 }
 
+function Get-LocUpdateHelp {
+    Write-Host
+    Write-Host "Usage: loc update <name>" -ForegroundColor Green
+    Write-Host "Update the path of a location with the given name to the current working directory" -ForegroundColor Green
+    Write-Host
+}
+
 function Get-LocRenameHelp {
     Write-Host
     Write-Host "Usage: loc rename <name> <new-name>" -ForegroundColor Green
@@ -347,6 +370,7 @@ function Get-LocWhereHelp {
 function Get-LocCliActions {
     $commands = @(
         "add",
+        "update",
         "rename",
         "edit",
         "list",
@@ -392,6 +416,15 @@ function Loc {
         $name = $args[1]
         $description = $args[2]
         Add-Location -name $name -description $description
+    }
+    elseif ($action -eq "update") {
+        if ($args.Length -lt 2) {
+            Write-Host "Usage: loc update <name>" -ForegroundColor Red
+            return
+        }
+
+        $name = $args[1]
+        update-location-path -name $name
     }
     elseif ($action -eq "rename") {
         if ($args.Length -lt 3) {
@@ -452,6 +485,9 @@ function Loc {
         $subAction = $args[1]
         if ($subAction -eq "add") {
             Get-LocAddHelp
+        }
+        elseif ($subAction -eq "update") {
+            Get-LocUpdateHelp
         }
         elseif ($subAction -eq "rename") {
             Get-LocRenameHelp
