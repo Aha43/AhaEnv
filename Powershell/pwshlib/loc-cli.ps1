@@ -233,7 +233,7 @@ function remove-this-location {
     }
 }
 
-function goto-location {
+function Mount-Location {
     param(
         [string]$name
     )
@@ -472,7 +472,7 @@ function Loc {
         }
 
         $name = $args[1]
-        goto-location -name $name
+        Mount-Location -name $name
     }
     elseif ($action -eq "where") {
         Get-LocationWhereIAm
