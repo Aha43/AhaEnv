@@ -29,7 +29,7 @@ function mcd {
     if ($args.Length -eq 0) {
         Write-Host "Usage: mcd <directory name>"
     } else {
-        New-Item -ItemType Directory -Path $args[0] -Force
+        [void](New-Item -ItemType Directory -Path $args[0] -Force)
         Set-Location -Path $args[0]
     }
 }
