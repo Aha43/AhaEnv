@@ -220,7 +220,7 @@ function remove-location {
     }
 }
 
-function remove-this-location {
+function Remove-ThisLocation {
     $path = (get-location).Path
     $locationsDir = Get-LocationDirectory
     $locations = Get-ChildItem -Path $locationsDir
@@ -460,7 +460,7 @@ function Loc {
         remove-location -name $name
     }
     elseif ($action -eq "remove-this") {
-        remove-this-location
+        Remove-ThisLocation
     }
     elseif ($action -eq "wash") {
         wash-locations
