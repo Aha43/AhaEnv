@@ -357,6 +357,7 @@ function Get-LocGotoHelp {
     Write-Host "Usage: loc goto <name | pos>" -ForegroundColor Green
     Write-Host "Go to the location with the given name (or position in location list)" -ForegroundColor Green
     Write-Host "You can also use 'loc go <name | pos>' to go to a location" -ForegroundColor Green
+    Write-Host "Finally, you can use 'loc <name | pos>' to go to a location" -ForegroundColor Green
     Write-Host
 }
 
@@ -521,9 +522,6 @@ function Loc {
         }
     }
     else {
-        Write-Host
-        Write-Host "Invalid action '$action'" -ForegroundColor Red
-        Write-Host "For more help: loc help" -ForegroundColor Red
-        Write-Host
+        loc go $action
     }
 }
