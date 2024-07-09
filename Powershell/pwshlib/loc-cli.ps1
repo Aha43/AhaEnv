@@ -108,6 +108,10 @@ function Test-Location([string]$name) {
     return (Test-Path -Path $path)
 }
 
+function Get-Timestamp {
+    return (Get-Date).ToString("yyyyMMddHHmmss")
+}
+
 # Exported functions
 
 function Add-Location {
@@ -133,10 +137,6 @@ function Add-Location {
     else {
         Write-Host "Location named '$name' already added" -ForegroundColor Red
     }
-}
-
-function Get-Timestamp {
-    return (Get-Date).ToString("yyyyMMddHHmmss")
 }
 
 function Get-NotesDir {
