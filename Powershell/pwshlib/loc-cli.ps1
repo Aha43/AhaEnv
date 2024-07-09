@@ -1,4 +1,6 @@
 
+# Internal functions
+
 function Get-LocationDirectory {
     $retVal = Join-Path -Path $HOME -ChildPath ".locations"
     if (-not (Test-Path -Path $retVal)) {
@@ -105,6 +107,8 @@ function Test-Location([string]$name) {
     $path = Get-Content -Path $pathFile
     return (Test-Path -Path $path)
 }
+
+# Exported functions
 
 function Add-Location {
     param(
