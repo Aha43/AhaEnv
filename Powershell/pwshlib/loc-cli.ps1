@@ -98,6 +98,14 @@ function Get-LocationName {
     }
 }
 
+function Test-Location([string]$name) {
+    $locationsDir = Get-LocationDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
+    $path = Get-Content -Path $pathFile
+    return (Test-Path -Path $path)
+}
+
 function Add-Location {
     param(
         [string]$name,
@@ -123,10 +131,85 @@ function Add-Location {
     }
 }
 
+function Get-Timestamp {
+    return (Get-Date).ToString("yyyyMMddHHmmss")
+}
+
+function Get-NotesDir {
+    param(
+        [string]$name
+    )
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return $null
+    }
+
+    $locationsDir = Get-LocationDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    $notesDir = Join-Path -Path $locationDir -ChildPath "notes"
+    if (-not (Test-Path -Path $notesDir)) {
+        [void](New-Item -Path $notesDir -ItemType Directory)
+    }
+    return $notesDir
+}
+
+function Get-NextNoteFile {
+    param(
+        [string]$name
+    )
+    $notesDir = Get-NotesDir -name $name
+    if (-not $notesDir) {
+        return $null
+    }
+
+    $timeStamp = Get-Timestamp
+    $noteFile = Join-Path -Path $notesDir -ChildPath "$timeStamp.txt"
+    return $noteFile
+}
+
+function Add-LocationNote {
+    param(
+        [string]$name,
+        [string]$note
+    )
+
+    $noteFile = Get-NextNoteFile -name $name
+    if (-not $noteFile) {
+        return
+    }
+
+    $note | Out-File -FilePath $noteFile
+}
+
+function Show-Notes {
+    param(
+        [string]$name
+    )
+
+    $notesDir = Get-NotesDir -name $name
+    if (-not $notesDir) {
+        return
+    }
+
+    $notes = Get-ChildItem -Path $notesDir
+    $notes | ForEach-Object {
+        $fullName = $_.FullName
+        $note = Get-Content -Path $fullName
+        $noteTimestamp = [System.IO.Path]::GetFileNameWithoutExtension($fullName)
+        Write-Host ($noteTimestamp + " - " + $note) -ForegroundColor Cyan
+    }
+}
+
 function Update-LocationPath {
     param(
         [string]$name
     )
+
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return
+    }
+
     $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
@@ -180,14 +263,6 @@ function Edit-Description {
     else {
         Write-Host "Location '$name' does not exist" -ForegroundColor Red
     }
-}
-
-function Test-Location([string]$name) {
-    $locationsDir = Get-LocationDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
-    $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
-    $path = Get-Content -Path $pathFile
-    return (Test-Path -Path $path)
 }
 
 function Show-Locations {
@@ -258,8 +333,6 @@ function Remove-ThisLocation {
     }
 }
 
-
-
 function Mount-Location {
     param(
         [string]$name
@@ -321,6 +394,20 @@ function Get-LocAddHelp {
     Write-Host
     Write-Host "Usage: loc add <name> <description>" -ForegroundColor Green
     Write-Host "Add the current working directory as a location with the given name and description" -ForegroundColor Green
+    Write-Host
+}
+
+function Get-LocNoteHelp {
+    Write-Host
+    Write-Host "Usage: loc note <name> <note>" -ForegroundColor Green
+    Write-Host "Add a note to the location with the given name" -ForegroundColor Green
+    Write-Host
+}
+
+function Get-LocNotesHelp {
+    Write-Host
+    Write-Host "Usage: loc notes <name>" -ForegroundColor Green
+    Write-Host "Show notes for the location with the given name" -ForegroundColor Green
     Write-Host
 }
 
@@ -393,6 +480,8 @@ function Get-LocWhereHelp {
 function Get-LocCliActions {
     $commands = @(
         "add",
+        "note",
+        "notes",
         "update",
         "rename",
         "edit",
@@ -439,6 +528,24 @@ function Loc {
         $name = $args[1]
         $description = $args[2]
         Add-Location -name $name -description $description
+    }
+    elseif ($action -eq "note") {
+        if ($args.Length -lt 3) {
+            Write-Host "Usage: loc note <name> <note>" -ForegroundColor Red
+            return
+        }
+
+        $name = $args[1]
+        $note = $args[2]
+        Add-LocationNote -name $name -note $note
+    }
+    elseif ($action -eq "notes") {
+        if ($args.Length -lt 2) {
+            Write-Host "Usage: loc notes <name>" -ForegroundColor Red
+        }
+
+        $name = $args[1]
+        Show-Notes -name $name
     }
     elseif ($action -eq "update") {
         if ($args.Length -lt 2) {
@@ -508,6 +615,12 @@ function Loc {
         $subAction = $args[1]
         if ($subAction -eq "add") {
             Get-LocAddHelp
+        }
+        elseif ($subAction -eq "note") {
+            Get-LocNoteHelp
+        }
+        elseif ($subAction -eq "notes") {
+            Get-LocNotesHelp
         }
         elseif ($subAction -eq "update") {
             Get-LocUpdateHelp
