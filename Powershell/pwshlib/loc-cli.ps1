@@ -153,36 +153,36 @@ function Get-LocAddHelp {
 
 function Get-LocNoteHelp {
     Write-Host
-    Write-Host "Usage: loc note <name> <note>" -ForegroundColor Green
-    Write-Host "Add a note to the location with the given name" -ForegroundColor Green
+    Write-Host "Usage: loc note <name | pos> <note>" -ForegroundColor Green
+    Write-Host "Add a note to the location with the given name (or position in location list)" -ForegroundColor Green
     Write-Host
 }
 
 function Get-LocNotesHelp {
     Write-Host
-    Write-Host "Usage: loc notes <name>" -ForegroundColor Green
-    Write-Host "Show notes for the location with the given name" -ForegroundColor Green
+    Write-Host "Usage: loc notes <name | pos>" -ForegroundColor Green
+    Write-Host "Show notes for the location with the given name (or position in location list)" -ForegroundColor Green
     Write-Host
 }
 
 function Get-LocUpdateHelp {
     Write-Host
-    Write-Host "Usage: loc update <name>" -ForegroundColor Green
-    Write-Host "Update the path of a location with the given name to the current working directory" -ForegroundColor Green
+    Write-Host "Usage: loc update <name | pos>" -ForegroundColor Green
+    Write-Host "Update the path of a location with the given name (or position in location list) to the current working directory" -ForegroundColor Green
     Write-Host
 }
 
 function Get-LocRenameHelp {
     Write-Host
-    Write-Host "Usage: loc rename <name> <new-name>" -ForegroundColor Green
-    Write-Host "Rename a location with the given name to the new name" -ForegroundColor Green
+    Write-Host "Usage: loc rename <name | pos> <new-name>" -ForegroundColor Green
+    Write-Host "Rename a location with the given name or pos (or position in location list) to the new name" -ForegroundColor Green
     Write-Host
 }
 
 function Get-LocEditHelp {
     Write-Host
-    Write-Host "Usage: loc edit <name> <description>" -ForegroundColor Green
-    Write-Host "Edit the description of a location with the given name" -ForegroundColor Green
+    Write-Host "Usage: loc edit <name | pos> <description>" -ForegroundColor Green
+    Write-Host "Edit the description of a location with the given name (or position in location list)" -ForegroundColor Green
     Write-Host
 }
 
@@ -196,8 +196,8 @@ function Get-LocListHelp {
 
 function Get-LocRemoveHelp {
     Write-Host
-    Write-Host "Usage: loc remove <name>" -ForegroundColor Green
-    Write-Host "Remove a location with the given name" -ForegroundColor Green
+    Write-Host "Usage: loc remove <name | pos>" -ForegroundColor Green
+    Write-Host "Remove a location with the given name (or position in location list)" -ForegroundColor Green
     Write-Host
 }
 
