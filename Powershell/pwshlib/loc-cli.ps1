@@ -353,7 +353,7 @@ function Rename-Location {
     if (-not $name) {
         return
     }
-    
+
     if (-not (Test-ValidLocationName -identifier $newName)) {
         Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
@@ -381,6 +381,12 @@ function Edit-Description {
         [string]$name,
         [string]$description
     )
+
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return
+    }
+
     $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
@@ -437,6 +443,12 @@ function Remove-Location {
     param(
         [string]$name
     )
+
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return
+    }
+
     $locationsDir = Get-LocationDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
