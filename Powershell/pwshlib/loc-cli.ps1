@@ -112,6 +112,38 @@ function Get-Timestamp {
     return (Get-Date).ToString("yyyyMMddHHmmss")
 }
 
+function Get-NextNoteFile {
+    param(
+        [string]$name
+    )
+    $notesDir = Get-NotesDir -name $name
+    if (-not $notesDir) {
+        return $null
+    }
+
+    $timeStamp = Get-Timestamp
+    $noteFile = Join-Path -Path $notesDir -ChildPath "$timeStamp.txt"
+    return $noteFile
+}
+
+function Get-NotesDir {
+    param(
+        [string]$name
+    )
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return $null
+    }
+
+    $locationsDir = Get-LocationDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    $notesDir = Join-Path -Path $locationDir -ChildPath "notes"
+    if (-not (Test-Path -Path $notesDir)) {
+        [void](New-Item -Path $notesDir -ItemType Directory)
+    }
+    return $notesDir
+}
+
 function Get-LocAddHelp {
     Write-Host
     Write-Host "Usage: loc add <name> <description>" -ForegroundColor Green
@@ -254,38 +286,6 @@ function Add-Location {
     else {
         Write-Host "Location named '$name' already added" -ForegroundColor Red
     }
-}
-
-function Get-NotesDir {
-    param(
-        [string]$name
-    )
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
-        return $null
-    }
-
-    $locationsDir = Get-LocationDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
-    $notesDir = Join-Path -Path $locationDir -ChildPath "notes"
-    if (-not (Test-Path -Path $notesDir)) {
-        [void](New-Item -Path $notesDir -ItemType Directory)
-    }
-    return $notesDir
-}
-
-function Get-NextNoteFile {
-    param(
-        [string]$name
-    )
-    $notesDir = Get-NotesDir -name $name
-    if (-not $notesDir) {
-        return $null
-    }
-
-    $timeStamp = Get-Timestamp
-    $noteFile = Join-Path -Path $notesDir -ChildPath "$timeStamp.txt"
-    return $noteFile
 }
 
 function Add-LocationNote {
@@ -528,8 +528,6 @@ function Get-LocationWhereIAm {
         Write-Host
     }
 }
-
-
 
 # cli
 function Loc {
