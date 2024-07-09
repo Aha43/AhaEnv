@@ -1,7 +1,7 @@
 
 # Internal functions
 
-function Get-LocationDirectory {
+function Get-LocationsDirectory {
     $retVal = Join-Path -Path $HOME -ChildPath ".locations"
     if (-not (Test-Path -Path $retVal)) {
         New-Item -Path $retVal -ItemType Directory
@@ -43,7 +43,7 @@ function Convert-ToUnsignedInt {
 }
 
 function Get-LocationCount {
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     return $locations.Length
 }
@@ -53,7 +53,7 @@ function Get-LocationNameAtPosition {
         [int]$position
     )
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $retVal = $null
     if ($locations.Length -gt 0) {
@@ -87,7 +87,7 @@ function Get-LocationName {
         $nameOrPos = Get-LocationNameAtPosition -position $pos    
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $nameOrPos
     if (Test-Path -Path $locationDir) {
         return $nameOrPos
@@ -101,7 +101,7 @@ function Get-LocationName {
 }
 
 function Test-Location([string]$name) {
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
     $path = Get-Content -Path $pathFile
@@ -135,7 +135,7 @@ function Get-NotesDir {
         return $null
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $notesDir = Join-Path -Path $locationDir -ChildPath "notes"
     if (-not (Test-Path -Path $notesDir)) {
@@ -274,7 +274,7 @@ function Add-Location {
     }
 
     $path = (get-location).Path 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (-not (Test-Path -Path $locationDir)) {
         [void](New-Item -Path $locationDir -ItemType Directory)
@@ -331,7 +331,7 @@ function Update-LocationPath {
         return
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
@@ -359,7 +359,7 @@ function Rename-Location {
         return
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $newLocationDir = Join-Path -Path $locationsDir -ChildPath $newName
 
@@ -387,7 +387,7 @@ function Edit-Description {
         return
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $descFile = Join-Path -Path $locationDir -ChildPath "description.txt"
@@ -399,7 +399,7 @@ function Edit-Description {
 }
 
 function Show-Locations {
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     [int]$pos = 0
     Write-Host
@@ -428,7 +428,7 @@ function Show-Locations {
 }
 
 function Repair-Locations {
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $locations | ForEach-Object {
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
@@ -449,7 +449,7 @@ function Remove-Location {
         return
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         Remove-Item -Path $locationDir -Recurse
@@ -461,7 +461,7 @@ function Remove-Location {
 
 function Remove-ThisLocation {
     $path = (get-location).Path
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $locations | ForEach-Object {
         $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
@@ -482,7 +482,7 @@ function Mount-Location {
         return
     }
 
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
@@ -500,7 +500,7 @@ function Mount-Location {
 }
 
 function Get-LocationWhereIAm {
-    $locationsDir = Get-LocationDirectory
+    $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $path = (get-location).Path
     [bool]$found = $false
