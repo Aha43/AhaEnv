@@ -348,6 +348,12 @@ function Rename-Location {
         [string]$name,
         [string]$newName
     )
+
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return
+    }
+    
     if (-not (Test-ValidLocationName -identifier $newName)) {
         Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
