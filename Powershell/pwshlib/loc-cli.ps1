@@ -66,6 +66,38 @@ function Get-LocationNameAtPosition {
     return $retVal
 }
 
+function Get-LocationName {
+    param(
+        [string]$nameOrPos,
+        [switch]$reportError
+    )
+
+    $pos = Convert-ToUnsignedInt -inputString $nameOrPos
+    if ($pos -gt -1) {
+        $count = Get-LocationCount
+        if ($pos -ge $count) {
+            if ($reportError) {
+                Write-Host "Location '$nameOrPos' does not exist" -ForegroundColor Red
+            }
+            return $null
+        }
+
+        $nameOrPos = Get-LocationNameAtPosition -position $pos    
+    }
+
+    $locationsDir = Get-LocationDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $nameOrPos
+    if (Test-Path -Path $locationDir) {
+        return $nameOrPos
+    }
+    else {
+        if ($reportError) {
+            Write-Host "Location '$nameOrPos' does not exist" -ForegroundColor Red
+        }
+        return $null
+    }
+}
+
 function Add-Location {
     param(
         [string]$name,
@@ -226,19 +258,16 @@ function Remove-ThisLocation {
     }
 }
 
+
+
 function Mount-Location {
     param(
         [string]$name
     )
-    $pos = Convert-ToUnsignedInt -inputString $name
-    if ($pos -gt -1) {
-        $count = Get-LocationCount
-        if ($pos -ge $count) {
-            Write-Host "Location '$name' does not exist" -ForegroundColor Red
-            return
-        }
-
-        $name = Get-LocationNameAtPosition -position $pos    
+    
+    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
+    if (-not $name) {
+        return
     }
 
     $locationsDir = Get-LocationDirectory
