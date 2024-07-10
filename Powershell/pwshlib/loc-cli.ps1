@@ -1,5 +1,9 @@
 
+#
 # Internal functions
+#
+
+# Utility functions
 
 function Get-MachineName {
     return $env:COMPUTERNAME
@@ -14,24 +18,6 @@ function Test-LocationsSystemOk {
     }
 
     return $true
-}
-
-function Get-LocationsDirectory {
-    $retVal = Join-Path -Path $HOME -ChildPath ".locations"
-    if (-not (Test-Path -Path $retVal)) {
-        New-Item -Path $retVal -ItemType Directory
-    }
-    return $retVal
-}
-
-function Get-LocationDirectory {
-    param (
-        [string]$name
-    )
-
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
-    return $locationDir
 }
 
 function Convert-ToUnsignedInt {
@@ -51,6 +37,77 @@ function Convert-ToUnsignedInt {
     }
 
     return [uint32]$number
+}
+
+function Get-Timestamp {
+    return (Get-Date).ToString("yyyyMMddHHmmss")
+}
+
+# Git functions
+
+function Get-GitBranch {
+    $locationsDir = Get-LocationsDirectory
+    Push-Location -Path $locationsDir 
+        $branch = & git rev-parse --abbrev-ref HEAD 2> $null
+    Pop-Location
+    if ($branch) {
+        return $branch
+    }
+    return ""
+}
+
+function Show-LocationStatus {
+    $errors = @()
+    $warnings = @()
+
+    if (-not $computerName) {
+        $errors += "Computer name not available"
+    }
+    else {
+        Write-Host "On computer: $computerName" -ForegroundColor Cyan
+    }
+
+    $branch = Get-GitBranch
+    if (-not $branch) {
+        $warnings += "Not tracked by git"
+    }
+    else {
+        Write-Host "Tracked by git" -ForegroundColor Cyan
+    }
+
+    # write warnings
+    if ($warnings.Length -gt 0) {
+        Write-Host "Warnings:" -ForegroundColor Yellow
+        $warnings | ForEach-Object {
+            Write-Host $_ -ForegroundColor Yellow
+        }
+    }
+
+    # write errors
+    if ($errors.Length -gt 0) {
+        Write-Host "Errors:" -ForegroundColor Red
+        $errors | ForEach-Object {
+            Write-Host $_ -ForegroundColor Red
+        }
+    }
+}
+
+function Get-LocationsDirectory {
+    $retVal = Join-Path -Path $HOME -ChildPath ".locations"
+    if (-not (Test-Path -Path $retVal)) {
+        New-Item -Path $retVal -ItemType Directory
+    }
+    return $retVal
+}
+
+function Get-LocationDirectory {
+    param (
+        [string]$name
+    )
+
+    $locationsDir = Get-LocationsDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    return $locationDir
 }
 
 function Get-LocationDirectoryGivenNameOrPos {
@@ -126,13 +183,16 @@ function Get-LocationNameAtPosition {
 
 function Test-Location([string]$name) {
     $locationDir = Get-LocationDirectory -name $name
-    $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
+
+    $machineName = Get-MachineName
+    $pathDirectory = Join-Path -Path $locationDir -ChildPath $machineName
+    if (-not (Test-Path -Path $pathDirectory)) {
+        return $false
+    }
+    $pathFile = Join-Path -Path $pathDirectory -ChildPath "path.txt"
+    
     $path = Get-Content -Path $pathFile
     return (Test-Path -Path $path)
-}
-
-function Get-Timestamp {
-    return (Get-Date).ToString("yyyyMMddHHmmss")
 }
 
 function Get-NextNoteFile {
@@ -304,13 +364,87 @@ function Add-Location {
     $locationDir = Get-LocationDirectory -name $name
     if (-not (Test-Path -Path $locationDir)) {
         [void](New-Item -Path $locationDir -ItemType Directory)
-        $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
-        $path | Out-File -FilePath $locFile
+
+        $machineName = Get-MachineName
+        $pathDirectory = Join-Path -Path $locationDir -ChildPath $machineName
+        if (-not (Test-Path -Path $pathDirectory)) {
+            [void](New-Item -Path $pathDirectory -ItemType Directory)
+        }
+        $pathFile = Join-Path -Path $pathDirectory -ChildPath "path.txt"
+        $path | Out-File -FilePath $pathFile
+
         $descFile = Join-Path -Path $locationDir -ChildPath "description.txt"
         $description | Out-File -FilePath $descFile   
     }
     else {
         Write-Host "Location named '$name' already added" -ForegroundColor Red
+    }
+}
+
+function Mount-Location {
+    param(
+        [string]$name
+    )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+    
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
+        return
+    }
+
+    if (Test-Path -Path $locationDir) {
+        $machineName = Get-MachineName
+        $pathDirectory = Join-Path -Path $locationDir -ChildPath $machineName
+        if (-not (Test-Path -Path $pathDirectory)) {
+            Write-Host "Location '$name' does not have a path for this machine" -ForegroundColor Red
+            return
+        }
+        $pathFile = Join-Path -Path $pathDirectory -ChildPath "path.txt"
+        
+        $path = Get-Content -Path $pathFile
+        if (-not (Test-Path -Path $path)) {
+            Write-Host "Location '$name' does not physical exist ('$path' probably deleted)" -ForegroundColor Red
+            return
+        }
+        Set-Location -Path $path
+        $host.UI.RawUI.WindowTitle = $name
+    }
+    else {
+        Write-Host "Location '$name' does not exist" -ForegroundColor Red
+    }
+}
+
+function Update-LocationPath {
+    param(
+        [string]$name
+    )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
+        return
+    }
+
+    if (Test-Path -Path $locationDir) {
+        
+        $machineName = Get-MachineName
+        $pathDirectory = Join-Path -Path $locationDir -ChildPath $machineName
+        if (-not (Test-Path -Path $pathDirectory)) {
+            [void](New-Item -Path $pathDirectory -ItemType Directory)
+        }
+        $pathFile = Join-Path -Path $pathDirectory -ChildPath "path.txt"
+        
+        $path = (get-location).Path
+        $path | Out-File -FilePath $pathFile
+    }
+    else {
+        Write-Host "Location '$name' does not exist" -ForegroundColor Red
     }
 }
 
@@ -352,30 +486,6 @@ function Show-Notes {
         $note = Get-Content -Path $fullName
         $noteTimestamp = [System.IO.Path]::GetFileNameWithoutExtension($fullName)
         Write-Host ($noteTimestamp + " - " + $note) -ForegroundColor Cyan
-    }
-}
-
-function Update-LocationPath {
-    param(
-        [string]$name
-    )
-
-    if (-not (Test-LocationsSystemOk)) {
-        return
-    }
-
-    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
-    if (-not $locationDir) {
-        return
-    }
-
-    if (Test-Path -Path $locationDir) {
-        $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
-        $path = (get-location).Path
-        $path | Out-File -FilePath $locFile
-    }
-    else {
-        Write-Host "Location '$name' does not exist" -ForegroundColor Red
     }
 }
 
@@ -455,20 +565,26 @@ function Show-Locations {
         [bool]$exist = Test-location -name $name
         $descFile = Join-Path -Path $_.FullName -ChildPath "description.txt"
         $description = Get-Content -Path $descFile
-        $pathFile = Join-Path -Path $_.FullName -ChildPath "path.txt"
-        $path = Get-Content -Path $pathFile
-        if (-not $exist) {
-            Write-Host "$pos" -NoNewline -ForegroundColor Red
-            Write-Host " - $name" -NoNewline -ForegroundColor Red
-            Write-Host " - $description" -NoNewline -ForegroundColor Red
-            Write-Host " - $path" -ForegroundColor Red
+
+        $machineName = Get-MachineName
+        $pathDirectory = Join-Path -Path $_.FullName -ChildPath $machineName
+        if (Test-Path -Path $pathDirectory) {
+            $pathFile = Join-Path -Path $pathDirectory -ChildPath "path.txt"
+            $path = Get-Content -Path $pathFile
+            if (-not $exist) {
+                Write-Host "$pos" -NoNewline -ForegroundColor Red
+                Write-Host " - $name" -NoNewline -ForegroundColor Red
+                Write-Host " - $description" -NoNewline -ForegroundColor Red
+                Write-Host " - $path" -ForegroundColor Red
+            }
+            else {
+                Write-Host "$pos" -NoNewline -ForegroundColor Yellow
+                Write-Host " - $name" -NoNewline -ForegroundColor Cyan
+                Write-Host " - $description" -NoNewline -ForegroundColor Green
+                Write-Host " - $path" -ForegroundColor Cyan
+            }    
         }
-        else {
-            Write-Host "$pos" -NoNewline -ForegroundColor Yellow
-            Write-Host " - $name" -NoNewline -ForegroundColor Cyan
-            Write-Host " - $description" -NoNewline -ForegroundColor Green
-            Write-Host " - $path" -ForegroundColor Cyan
-        }
+        
         $pos++
     }
     Write-Host
@@ -528,35 +644,6 @@ function Remove-ThisLocation {
         if ($path -eq $locPath) {
             Remove-Item -Path $_.FullName -Recurse
         }
-    }
-}
-
-function Mount-Location {
-    param(
-        [string]$name
-    )
-
-    if (-not (Test-LocationsSystemOk)) {
-        return
-    }
-    
-    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
-    if (-not $locationDir) {
-        return
-    }
-
-    if (Test-Path -Path $locationDir) {
-        $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
-        $path = Get-Content -Path $locFile
-        if (-not (Test-Path -Path $path)) {
-            Write-Host "Location '$name' does not physical exist ('$path' probably deleted)" -ForegroundColor Red
-            return
-        }
-        Set-Location -Path $path
-        $host.UI.RawUI.WindowTitle = $name
-    }
-    else {
-        Write-Host "Location '$name' does not exist" -ForegroundColor Red
     }
 }
 
