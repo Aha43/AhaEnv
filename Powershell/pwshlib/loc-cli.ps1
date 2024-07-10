@@ -9,18 +9,14 @@ function Get-LocationsDirectory {
     return $retVal
 }
 
-function Test-ValidLocationName {
+function Get-LocationDirectory {
     param (
-        [string]$identifier
+        [string]$name
     )
 
-    $regex = '^[a-zA-Z_][a-zA-Z0-9_]*$'
-    
-    if ($identifier -match $regex) {
-        return $true
-    } else {
-        return $false
-    }
+    $locationsDir = Get-LocationsDirectory
+    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    return $locationDir
 }
 
 function Convert-ToUnsignedInt {
@@ -40,6 +36,51 @@ function Convert-ToUnsignedInt {
     }
 
     return [uint32]$number
+}
+
+function Get-LocationDirectoryGivenNameOrPos {
+    param (
+        [string]$nameOrPos,
+        [switch]$reportError
+    )
+
+    $pos = Convert-ToUnsignedInt -inputString $nameOrPos
+    if ($pos -gt -1) {
+        $count = Get-LocationCount
+        if ($pos -ge $count) {
+            if ($reportError) {
+                Write-Host "Location '$nameOrPos' does not exist" -ForegroundColor Red
+            }
+            return $null
+        }
+
+        $nameOrPos = Get-LocationNameAtPosition -position $pos    
+    }
+
+    $locationDir = Get-LocationDirectory -name $nameOrPos
+    if (Test-Path -Path $locationDir) {
+        return $locationDir
+    }
+    else {
+        if ($reportError) {
+            Write-Host "Location '$nameOrPos' does not exist" -ForegroundColor Red
+        }
+        return $null
+    }
+}    
+
+function Test-ValidLocationName {
+    param (
+        [string]$identifier
+    )
+
+    $regex = '^[a-zA-Z_][a-zA-Z0-9_]*$'
+    
+    if ($identifier -match $regex) {
+        return $true
+    } else {
+        return $false
+    }
 }
 
 function Get-LocationCount {
@@ -68,41 +109,8 @@ function Get-LocationNameAtPosition {
     return $retVal
 }
 
-function Get-LocationName {
-    param(
-        [string]$nameOrPos,
-        [switch]$reportError
-    )
-
-    $pos = Convert-ToUnsignedInt -inputString $nameOrPos
-    if ($pos -gt -1) {
-        $count = Get-LocationCount
-        if ($pos -ge $count) {
-            if ($reportError) {
-                Write-Host "Location '$nameOrPos' does not exist" -ForegroundColor Red
-            }
-            return $null
-        }
-
-        $nameOrPos = Get-LocationNameAtPosition -position $pos    
-    }
-
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $nameOrPos
-    if (Test-Path -Path $locationDir) {
-        return $nameOrPos
-    }
-    else {
-        if ($reportError) {
-            Write-Host "Location '$nameOrPos' does not exist" -ForegroundColor Red
-        }
-        return $null
-    }
-}
-
 function Test-Location([string]$name) {
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    $locationDir = Get-LocationDirectory -name $name
     $pathFile = Join-Path -Path $locationDir -ChildPath "path.txt"
     $path = Get-Content -Path $pathFile
     return (Test-Path -Path $path)
@@ -130,13 +138,12 @@ function Get-NotesDir {
     param(
         [string]$name
     )
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
+
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
         return $null
     }
 
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     $notesDir = Join-Path -Path $locationDir -ChildPath "notes"
     if (-not (Test-Path -Path $notesDir)) {
         [void](New-Item -Path $notesDir -ItemType Directory)
@@ -274,8 +281,7 @@ function Add-Location {
     }
 
     $path = (get-location).Path 
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+    $locationDir = Get-LocationDirectory -name $name
     if (-not (Test-Path -Path $locationDir)) {
         [void](New-Item -Path $locationDir -ItemType Directory)
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
@@ -326,13 +332,11 @@ function Update-LocationPath {
         [string]$name
     )
 
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
         return
     }
 
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
         $path = (get-location).Path
@@ -349,18 +353,18 @@ function Rename-Location {
         [string]$newName
     )
 
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
-        return
-    }
-
     if (-not (Test-ValidLocationName -identifier $newName)) {
         Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
     }
 
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
+        return
+    }
+
     $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
+
     $newLocationDir = Join-Path -Path $locationsDir -ChildPath $newName
 
     if (Test-Path -Path $newLocationDir) {
@@ -382,13 +386,11 @@ function Edit-Description {
         [string]$description
     )
 
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
         return
     }
 
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $descFile = Join-Path -Path $locationDir -ChildPath "description.txt"
         $description | Out-File -FilePath $descFile
@@ -444,13 +446,11 @@ function Remove-Location {
         [string]$name
     )
 
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
         return
     }
 
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         Remove-Item -Path $locationDir -Recurse
     }
@@ -477,13 +477,11 @@ function Mount-Location {
         [string]$name
     )
     
-    $name = (Get-LocationName -nameOrPos $name -reportError:$true)
-    if (-not $name) {
+    $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
+    if (-not $locationDir) {
         return
     }
 
-    $locationsDir = Get-LocationsDirectory
-    $locationDir = Join-Path -Path $locationsDir -ChildPath $name
     if (Test-Path -Path $locationDir) {
         $locFile = Join-Path -Path $locationDir -ChildPath "path.txt"
         $path = Get-Content -Path $locFile
