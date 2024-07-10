@@ -1,6 +1,21 @@
 
 # Internal functions
 
+function Get-MachineName {
+    return $env:COMPUTERNAME
+}
+
+function Test-LocationsSystemOk {
+    $computerName = Get-MachineName
+    if (-not $computerName) {
+        Write-Host "Locations system not available:" -ForegroundColor Red
+        Write-Host "Computer name not available" -ForegroundColor Red
+        return $false
+    }
+
+    return $true
+}
+
 function Get-LocationsDirectory {
     $retVal = Join-Path -Path $HOME -ChildPath ".locations"
     if (-not (Test-Path -Path $retVal)) {
@@ -275,6 +290,11 @@ function Add-Location {
         [string]$name,
         [string]$description
     )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }   
+
     if (-not (Test-ValidLocationName -identifier $name)) {
         Write-Host "Invalid location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
         return
@@ -300,6 +320,10 @@ function Add-LocationNote {
         [string]$note
     )
 
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $noteFile = Get-NextNoteFile -name $name
     if (-not $noteFile) {
         return
@@ -312,6 +336,10 @@ function Show-Notes {
     param(
         [string]$name
     )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
 
     $notesDir = Get-NotesDir -name $name
     if (-not $notesDir) {
@@ -331,6 +359,10 @@ function Update-LocationPath {
     param(
         [string]$name
     )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
 
     $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
     if (-not $locationDir) {
@@ -352,6 +384,10 @@ function Rename-Location {
         [string]$name,
         [string]$newName
     )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
 
     if (-not (Test-ValidLocationName -identifier $newName)) {
         Write-Host "Invalid new location name. Must start with a letter or underscore and contain only letters, numbers, and underscores" -ForegroundColor Red
@@ -386,6 +422,10 @@ function Edit-Description {
         [string]$description
     )
 
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
     if (-not $locationDir) {
         return
@@ -401,6 +441,11 @@ function Edit-Description {
 }
 
 function Show-Locations {
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     [int]$pos = 0
@@ -430,6 +475,11 @@ function Show-Locations {
 }
 
 function Repair-Locations {
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $locations | ForEach-Object {
@@ -446,6 +496,10 @@ function Remove-Location {
         [string]$name
     )
 
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
     if (-not $locationDir) {
         return
@@ -460,6 +514,11 @@ function Remove-Location {
 }
 
 function Remove-ThisLocation {
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $path = (get-location).Path
     $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
@@ -476,6 +535,10 @@ function Mount-Location {
     param(
         [string]$name
     )
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
     
     $locationDir = (Get-LocationDirectoryGivenNameOrPos -nameOrPos $name -reportError:$true)
     if (-not $locationDir) {
@@ -498,6 +561,11 @@ function Mount-Location {
 }
 
 function Get-LocationWhereIAm {
+
+    if (-not (Test-LocationsSystemOk)) {
+        return
+    }
+
     $locationsDir = Get-LocationsDirectory
     $locations = Get-ChildItem -Path $locationsDir
     $path = (get-location).Path
