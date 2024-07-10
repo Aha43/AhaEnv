@@ -84,6 +84,9 @@ function pub {
     }
 
     $LibTargetPath = (Get-Item $PROFILE).Directory.FullName
+    if (Test-Path $LibTargetPath) {
+        Remove-Item -Path $LibTargetPath -Recurse -Force
+    }
 
     Copy-Item -Path $LibSourcePath -Destination $LibTargetPath -Recurse -Force
 }
