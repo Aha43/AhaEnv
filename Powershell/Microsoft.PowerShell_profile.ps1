@@ -2,11 +2,18 @@
 # add the bin directory in user home to path
 $env:Path += ";$env:USERPROFILE\bin"
 
-# Loading functions
-$LibDir = (Get-Item $PROFILE).Directory.FullName + "\pwshlib"
-$funfiles = Get-ChildItem -Path $LibDir -Filter "*.ps1"
-foreach ($file in $funfiles) {
-    . $file.FullName
+$ProfileDir = Split-Path -Parent $PROFILE
+$LibDir = Join-Path -Path $ProfileDir -ChildPath "pwshlib"
+
+#Loading functions
+if (Test-Path $LibDir) {
+    $funfiles = Get-ChildItem -Path $LibDir -Filter "*.ps1"
+    foreach ($file in $funfiles) {
+        Write-Host ("Loading functions from: " + $file.FullName) -ForegroundColor Yellow
+        . $file.FullName
+    }
+} else {
+    Write-Host "Directory not found: $LibDir" -ForegroundColor Red
 }
 
 function _promptheader {
@@ -62,7 +69,7 @@ function help {
 function pub {
     $SourcePath = Join-Path -Path "." -ChildPath "Microsoft.PowerShell_profile.ps1"
     if (-not (Test-Path $SourcePath)) {
-        Write-Host "File not found: $SourcePath"
+        Write-Host "Source profile file not found: $SourcePath" -ForegroundColor Red
         return
     }
 
@@ -72,9 +79,10 @@ function pub {
     #write the content to the current profile
     Set-Content -Path $PROFILE -Value $profileContent -Force
 
+    #modify the branch variable in the profile so that it is set to the current branch
     $Branch = bname
-    #append to the current profile a veriable having value of $Branch
     Add-Content -Path $PROFILE -Value "`$TheBranch = '$Branch'"
+    
     Add-Content -Path $PROFILE -Value "hello"
 
     $LibSourcePath = Join-Path -Path "." -ChildPath "pwshlib"
@@ -83,12 +91,18 @@ function pub {
         return
     }
 
-    $LibTargetPath = (Get-Item $PROFILE).Directory.FullName
-    if (Test-Path $LibTargetPath) {
-        Remove-Item -Path $LibTargetPath -Recurse -Force
+    if (Test-Path $LibDir) {
+        Write-Host "Deletes the lib directory: $LibDir" -ForegroundColor Yellow
+        Remove-Item -Path $LibDir -Recurse -Force
     }
 
-    Copy-Item -Path $LibSourcePath -Destination $LibTargetPath -Recurse -Force
+    if (-not (Test-Path $LibDir)) {
+        Write-Host "Creates the lib directory: $LibDir" -ForegroundColor Yellow
+        [void](New-Item -Path $LibDir -ItemType Directory)
+    }
+
+    Write-Host "Copies files from $LibSourcePath to $ProfileDir" -ForegroundColor Yellow
+    Copy-Item -Path $LibSourcePath -Destination $ProfileDir -Recurse -Force 
 }
 
 function propath  { $PROFILE }
@@ -329,3 +343,5 @@ function prompt {
     
     return " "
 }
+
+Set-PSReadLineOption -Colors @{ Command = 'Green' }
