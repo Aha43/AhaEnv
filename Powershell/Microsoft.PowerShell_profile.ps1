@@ -9,6 +9,16 @@ foreach ($file in $funfiles) {
     . $file.FullName
 }
 
+# Loading user specified stuff
+function Run-UserPsFile {
+    $UserPsFile = Join-Path -Path $HOME -ChildPath ".myps.ps1"
+    Write-Host "UserPsFile: $UserPsFile"
+    if (Test-Path $UserPsFile) {
+        Write-Host "Running user specified file: $UserPsFile"
+        . $UserPsFile
+    }
+}
+
 function _promptheader {
     $Date = Get-Date -Format "dd.MM.yy"
     $Week = week
@@ -326,3 +336,5 @@ function prompt {
     
     return " "
 }
+
+Run-UserPsFile
