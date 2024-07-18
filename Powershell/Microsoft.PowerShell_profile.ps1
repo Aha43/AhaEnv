@@ -10,7 +10,7 @@ foreach ($file in $funfiles) {
 }
 
 # Loading user specified stuff
-function Run-UserPsFile {
+function Invoke-UserPsFile {
     $UserPsFile = Join-Path -Path $HOME -ChildPath ".myps.ps1"
     Write-Host "UserPsFile: $UserPsFile"
     if (Test-Path $UserPsFile) {
