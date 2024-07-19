@@ -17,7 +17,7 @@ if (Test-Path $LibDir) {
 }
 
 # Loading user specified stuff
-function Run-UserPsFile {
+function Invoke-UserPsFile {
     $UserPsFile = Join-Path -Path $HOME -ChildPath ".myps.ps1"
     Write-Host "UserPsFile: $UserPsFile"
     if (Test-Path $UserPsFile) {
@@ -354,8 +354,6 @@ function prompt {
     return " "
 }
 
-<<<<<<< HEAD
 Set-PSReadLineOption -Colors @{ Command = 'Green' }
-=======
-Run-UserPsFile
->>>>>>> 8f1e451 (now run a file .myps.ps1 if exist in users home dir)
+
+Invoke-UserPsFile
