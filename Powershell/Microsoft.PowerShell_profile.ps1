@@ -70,7 +70,6 @@ function help {
     Write-Host "    fs-help:                        Show file system functions"
     Write-Host "    ut-help:                        Show utility functions"
     Write-Host "    ji-help:                        Show Jira functions"
-    Write-Host "    loc-help:                       Show location management and navigation commands help, the loc cli"
     Write-Host
 }
 
