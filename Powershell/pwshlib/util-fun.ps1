@@ -9,6 +9,7 @@ function ut-help {
     Write-Host "    genpwd:                         Generate a random password"
     Write-Host "    psv:                            Show the PowerShell version"
     Write-Host "    quote:                          how a random quote"
+    Write-Host "    stop-process-on-port <port>:    Stop the process running on a specific port (default: 5000)"
     Write-Host
 }
 
@@ -42,5 +43,20 @@ function quote {
         $lines = @(Get-Content $quotesFile)
         $lines | Get-Random
         Write-Host
+    }
+}
+
+# function to stop process on a specific port
+function stop-process-on-port {
+    param(
+        [int]$Port = 5000
+    )
+    $process = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+    if ($process) {
+        $process | ForEach-Object {
+            Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
+        }
+    } else {
+        Write-Host "No process found on port $Port"
     }
 }
