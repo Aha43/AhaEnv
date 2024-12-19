@@ -124,6 +124,9 @@ function propaths { $PROFILE | Get-Member -Type NoteProperty | Format-List }
 function hello {
     Clear-Host
     quote
+    Write-Host
+    Compare-SunsetTimes
+    Write-Host
     _promptheader
 }
 
